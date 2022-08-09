@@ -1,7 +1,7 @@
 package com.felstar.restfulzio.videos
 
 import io.getquill.jdbczio.Quill
-import io.getquill.{Escape, H2ZioJdbcContext, MappedEncoding}
+import io.getquill.{Escape, H2ZioJdbcContext}
 import zio._
 
 import java.util.UUID
@@ -9,13 +9,8 @@ import javax.sql.DataSource
 
 case class VideoTable(uuid: UUID, name: String)
 
-//trait Codecs {
-//  implicit val encodeUUID = MappedEncoding[UUID, String](_.toString)
-//  implicit val decodeUUID = MappedEncoding[String, UUID](UUID.fromString(_))
-//}
-
 case class PersistentVideoRepo(ds: DataSource) extends VideoRepo {
-  val ctx = new H2ZioJdbcContext(Escape) // with Codecs
+  val ctx = new H2ZioJdbcContext(Escape)
 
   import ctx._
 
