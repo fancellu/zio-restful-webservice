@@ -10,7 +10,7 @@ import zio.ZIO
  *   - Does not use Env
  */
 object NoEnvApp {
-  def apply(): Http[String, Nothing, Request, Response] =
+  def apply(): Http[Any, Nothing, Request, Response] =
 
       Http.collect[Request] {
         // GET /noenv

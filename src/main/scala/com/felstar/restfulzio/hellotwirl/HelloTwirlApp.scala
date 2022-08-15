@@ -15,7 +15,7 @@ object HelloTwirlApp {
   val textHTML: Headers =
     Headers(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.TEXT_HTML)
 
-  def apply(): Http[String, Nothing, Request, Response] =
+  def apply(): Http[Any, Nothing, Request, Response] =
     Http.collect[Request] {
       // GET /hellotwirl/:string
       case Method.GET -> !! / "hellotwirl" / string  =>
