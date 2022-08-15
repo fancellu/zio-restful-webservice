@@ -1,6 +1,6 @@
 # ZIO Restful webservice example
 
-Using zio, zio-http, zio-json, quill, H2, twirl
+Using zio 2.0, zio-http, zio-json, quill, H2, twirl
 
 ## Apps
 
