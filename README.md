@@ -38,6 +38,11 @@ Using zio 2.0, zio-http, zio-json, quill, H2, twirl
   - http://localhost:8080/videos/loadup
   - http://localhost:8080/videos/:name 
 
+### DelayApp
+(Semantically sleeps for a while, no thread blocking, useful for emulating slow queries)
+- http://localhost:8080/delay
+- http://localhost:8080/delay/2
+
 ## To run
 
 ```scala

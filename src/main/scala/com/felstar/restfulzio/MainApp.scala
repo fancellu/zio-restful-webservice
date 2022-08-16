@@ -1,6 +1,7 @@
 package com.felstar.restfulzio
 
 import com.felstar.restfulzio.counter.CounterApp
+import com.felstar.restfulzio.delay.DelayApp
 import com.felstar.restfulzio.download.DownloadApp
 import com.felstar.restfulzio.hellotwirl.HelloTwirlApp
 import com.felstar.restfulzio.helloworld.HelloWorldApp
@@ -13,7 +14,7 @@ object MainApp extends ZIOAppDefault {
   def run =
     Server.start(
       port = 8080,
-      http = NoEnvApp() ++ HelloWorldApp() ++ DownloadApp() ++ CounterApp() ++ VideoApp() ++ HelloTwirlApp()
+      http = NoEnvApp() ++ HelloWorldApp() ++ DownloadApp() ++ CounterApp() ++ VideoApp() ++ HelloTwirlApp() ++ DelayApp()
     ).provide(
       // For `CounterApp`
       ZLayer.fromZIO(Ref.make(0)),
