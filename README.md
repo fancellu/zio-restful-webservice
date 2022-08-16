@@ -42,6 +42,7 @@ Using zio 2.0, zio-http, zio-json, quill, H2, twirl
 (Semantically sleeps for a while, no thread blocking, useful for emulating slow queries)
 - http://localhost:8080/delay
 - http://localhost:8080/delay/2
+- http://localhost:8080/bang
 
 ## To run
 

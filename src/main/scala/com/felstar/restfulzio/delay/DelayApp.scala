@@ -13,7 +13,7 @@ import zio.{Random, ZIO, durationInt}
  *   Delays N seconds, useful when testing client code for timeout handling
  */
 object DelayApp {
-  def apply(): Http[Any, Nothing, Request, Response] = {
+  def apply(): Http[Any, Throwable, Request, Response] = {
 
     def delay(n: Int=3): ZIO[Any, Nothing, Response] = {
       for {
@@ -31,6 +31,8 @@ object DelayApp {
       // GET /delay
       case Method.GET -> !! / "delay" =>
         delay()
+      case Method.GET -> !! / "bang" =>
+        delay() *> ZIO.fail(new Exception("bang!!!"))
     }
   }
 }
