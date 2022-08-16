@@ -7,14 +7,19 @@ import com.felstar.restfulzio.hellotwirl.HelloTwirlApp
 import com.felstar.restfulzio.helloworld.HelloWorldApp
 import com.felstar.restfulzio.noenv.NoEnvApp
 import com.felstar.restfulzio.videos.{InmemoryVideoRepo, PersistentVideoRepo, VideoApp}
+import zhttp.http.Middleware
 import zhttp.service.Server
 import zio._
 
 object MainApp extends ZIOAppDefault {
+
+  val middlewares = Middleware.dropTrailingSlash
+
   def run =
     Server.start(
+
       port = 8080,
-      http = NoEnvApp() ++ HelloWorldApp() ++ DownloadApp() ++ CounterApp() ++ VideoApp() ++ HelloTwirlApp() ++ DelayApp()
+      http = (NoEnvApp() ++ HelloWorldApp() ++ DownloadApp() ++ CounterApp() ++ VideoApp() ++ HelloTwirlApp() ++ DelayApp()) @@ middlewares
     ).provide(
       // For `CounterApp`
       ZLayer.fromZIO(Ref.make(0)),
