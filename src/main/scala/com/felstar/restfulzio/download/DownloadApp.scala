@@ -31,7 +31,7 @@ object DownloadApp {
         val file = "bigfile.txt"
         Http.fromStream(
           ZStream.fromResource(file)
-            .schedule(Schedule.spaced(50.millis))
+            .schedule(Schedule.spaced(10.millis))
         ).setHeaders(
           Headers(
             ("Content-Type", "application/octet-stream"),
