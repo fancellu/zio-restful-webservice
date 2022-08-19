@@ -2,7 +2,7 @@ package com.felstar.restfulzio.delay
 
 import zhttp.http._
 import zio.Console._
-import zio.{Random, ZIO, durationInt}
+import zio.{IO, Random, Task, UIO, ZIO, durationInt}
 
 
 /**
@@ -15,13 +15,21 @@ import zio.{Random, ZIO, durationInt}
 object DelayApp {
   def apply(): Http[Any, Throwable, Request, Response] = {
 
-    def delay(n: Int=3): ZIO[Any, Nothing, Response] = {
+    def delay(n: Int=3): UIO[Response] = {
       for {
         _ <- printLine(s"starting delay, waiting $n").orDie
         _ <- ZIO.sleep(n.second) // semantic blocking, but doesn't block any threads
         _ <- printLine("delay ended").orDie
         randomInt <- Random.nextIntBetween(1,10000)
       } yield Response.text(s"Hello from delay, slept for $n seconds, random int: $randomInt")
+    }
+
+    // fails 9 out of 10 times, failure maps to 500 error
+    def bangRandomly() : Task[Response] = {
+      for {
+        float <- Random.nextFloat
+        _ <- if (float>0.1) printLineError(s"went bang $float") *> ZIO.fail(new Exception("bangRandomly")) else (printLine(s"OK $float") *> ZIO.unit)
+      } yield Response.text(s"OK")
     }
 
     Http.collectZIO[Request] {
@@ -32,7 +40,10 @@ object DelayApp {
       case Method.GET -> !! / "delay" =>
         delay()
       case Method.GET -> !! / "bang" =>
-        delay() *> ZIO.fail(new Exception("bang!!!"))
+        val pp: ZIO[Any, Exception, Nothing] =delay() *> ZIO.fail(new Exception("bang!!!"))
+        pp
+      case Method.GET -> !! / "bangrandomly" =>
+        bangRandomly()
     }
   }
 }

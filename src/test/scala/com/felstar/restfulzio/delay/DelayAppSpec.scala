@@ -3,7 +3,7 @@ package com.felstar.restfulzio.delay
 import zhttp.http._
 import zio.Cause.Fail
 import zio.Console.printLine
-import zio.{ZLayer, durationInt}
+import zio.{Random, Schedule, ZLayer, durationInt}
 import zio.test._
 
 object DelayAppSpec extends ZIOSpecDefault {
@@ -40,7 +40,16 @@ object DelayAppSpec extends ZIOSpecDefault {
         _ <- TestClock.adjust(10.seconds)
         exitValue <- expectedBodyFiber.await
       } yield assertTrue(exitValue.isFailure)
-    }
+    },
+    test("should not fail, due to TestAspect.retry") {
+      val path = !! / "bangrandomly"
+      val req = Request(url = URL(path))
 
+      for {
+        expectedBodyFiber <- app(req).flatMap(_.bodyAsString).fork
+        _ <- TestClock.adjust(10.seconds)
+        exitValue <- expectedBodyFiber.await
+      } yield assertTrue(exitValue.isSuccess)
+    } @@ TestAspect.retry(Schedule.spaced(10.millis))
   )
 }

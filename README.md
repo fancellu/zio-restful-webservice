@@ -43,6 +43,7 @@ Using zio 2.0, zio-http, zio-json, quill, H2, twirl
 - http://localhost:8080/delay
 - http://localhost:8080/delay/2
 - http://localhost:8080/bang
+- http://localhost:8080/bangrandomly
 
 ## To run
 
