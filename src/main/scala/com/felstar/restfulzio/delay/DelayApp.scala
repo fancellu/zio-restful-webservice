@@ -40,8 +40,7 @@ object DelayApp {
       case Method.GET -> !! / "delay" =>
         delay()
       case Method.GET -> !! / "bang" =>
-        val pp: ZIO[Any, Exception, Nothing] =delay() *> ZIO.fail(new Exception("bang!!!"))
-        pp
+        delay() *> ZIO.fail(new Exception("bang!!!"))
       case Method.GET -> !! / "bangrandomly" =>
         bangRandomly()
     }
