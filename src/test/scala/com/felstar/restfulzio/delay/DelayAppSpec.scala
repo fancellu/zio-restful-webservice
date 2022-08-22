@@ -50,6 +50,6 @@ object DelayAppSpec extends ZIOSpecDefault {
         _ <- TestClock.adjust(10.seconds)
         exitValue <- expectedBodyFiber.await
       } yield assertTrue(exitValue.isSuccess)
-    } @@ TestAspect.retry(Schedule.spaced(10.millis))
+    } @@ TestAspect.retry(Schedule.spaced(10.millis).tapOutput(count=>printLine(s"retried $count").orDie))
   )
 }
