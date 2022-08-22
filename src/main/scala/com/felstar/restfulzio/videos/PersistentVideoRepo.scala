@@ -3,6 +3,7 @@ package com.felstar.restfulzio.videos
 import io.getquill.jdbczio.Quill
 import io.getquill.{Escape, H2ZioJdbcContext}
 import zio._
+import zio.stream.ZStream
 
 import java.util.UUID
 import javax.sql.DataSource
@@ -44,6 +45,13 @@ case class PersistentVideoRepo(ds: DataSource) extends VideoRepo {
         query[VideoTable].map(v => Video(v.name, v.uuid ))
       }
     }.provide(ZLayer.succeed(ds))
+
+  override def videosStream: ZStream[Any, Throwable, Video] =
+    ctx.stream {
+      quote {
+        query[VideoTable].map(v => Video(v.name, v.uuid))
+      }
+    }.provideLayer(ZLayer.succeed(ds))
 }
 
 object PersistentVideoRepo {

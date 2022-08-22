@@ -6,11 +6,8 @@ import com.felstar.restfulzio.download.DownloadApp
 import com.felstar.restfulzio.hellotwirl.HelloTwirlApp
 import com.felstar.restfulzio.helloworld.HelloWorldApp
 import com.felstar.restfulzio.noenv.NoEnvApp
-import com.felstar.restfulzio.videos.{
-  InmemoryVideoRepo,
-  PersistentVideoRepo,
-  VideoApp
-}
+import com.felstar.restfulzio.stream.StreamApp
+import com.felstar.restfulzio.videos.{InmemoryVideoRepo, PersistentVideoRepo, VideoApp}
 import zhttp.http.{Http, HttpApp, Middleware, Response, Status}
 import zhttp.http.middleware.HttpMiddleware
 import zhttp.service.Server
@@ -43,7 +40,8 @@ object MainApp extends ZIOAppDefault {
       .start(
         port = 8080,
         http =
-          (NoEnvApp() ++ HelloWorldApp() ++ DownloadApp() ++ CounterApp() ++ VideoApp() ++ HelloTwirlApp() ++ DelayApp()) @@ middlewares
+          (NoEnvApp() ++ HelloWorldApp() ++ DownloadApp() ++ CounterApp() ++ VideoApp() ++ HelloTwirlApp() ++
+            DelayApp() ++ StreamApp()) @@ middlewares
       )
       .provide(
         // For `CounterApp`

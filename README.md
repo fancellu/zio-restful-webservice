@@ -45,6 +45,13 @@ Using zio 2.0, zio-http, zio-json, quill, H2, twirl
 - http://localhost:8080/bang
 - http://localhost:8080/bangrandomly
 
+### StreamApp
+(Some streaming examples)
+- http://localhost:8080/stream/incrementing
+- http://localhost:8080/stream/randomInt
+- http://localhost:8080/stream/videos
+  - (Make sure you have some videos in DB, perhaps call http://localhost:8080/videos/loadup)
+
 ## To run
 
 ```scala
