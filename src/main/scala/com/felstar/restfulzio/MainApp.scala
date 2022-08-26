@@ -12,8 +12,9 @@ import com.felstar.restfulzio.videos.{InmemoryVideoRepo, PersistentVideoRepo, Vi
 import zhttp.http.{Http, HttpApp, Middleware, Response, Status}
 import zhttp.http.middleware.HttpMiddleware
 import zhttp.service.{ChannelFactory, EventLoopGroup, Server}
-import zio.Console.{printLine, printLineError}
+import zio.logging.LogFormat._
 import zio._
+import zio.logging.{LogColor, LogFormat, console}
 
 import java.io.IOException
 
@@ -28,7 +29,7 @@ object MainApp extends ZIOAppDefault {
       http
         .catchAll { ex =>
           val zio: ZIO[Any, IOException, Response] = for {
-            _ <- printLineError(ex)
+            _ <- ZIO.logError(ex.toString)
           } yield Response.status(Status.InternalServerError)
           Http.responseZIO(zio)
         }
@@ -36,13 +37,22 @@ object MainApp extends ZIOAppDefault {
 
   val middlewares = Middleware.dropTrailingSlash ++ errorMiddleware
 
-  def run =
+  val myLogFormat =  label("xx", timestamp.fixed(32)).color(LogColor.BLUE) // |-|
+//    label("level", level).highlight |-|
+//    label("message", quoted(line)).highlight
+
+
+  val logger =
+    Runtime.removeDefaultLoggers >>> console(LogFormat.colored)
+
+  def run = {
+    ZIO.logInfo("Starting up").provide(logger) *>
     Server
       .start(
         port = 8080,
         http =
-          (NoEnvApp() ++ HelloWorldApp() ++ DownloadApp() ++ CounterApp() ++ VideoApp() ++ HelloTwirlApp() ++
-            DelayApp() ++ StreamApp() ++ ClientApp()) @@ middlewares
+          ((NoEnvApp() ++ HelloWorldApp() ++ DownloadApp() ++ CounterApp() ++ VideoApp() ++ HelloTwirlApp() ++
+            DelayApp() ++ StreamApp() ++ ClientApp()) @@ middlewares)
       )
       .provide(
         // For `CounterApp`
@@ -57,4 +67,5 @@ object MainApp extends ZIOAppDefault {
         EventLoopGroup.auto()
       )
       .exitCode
+  }
 }
