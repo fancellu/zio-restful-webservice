@@ -16,7 +16,7 @@ object VideoAppSpec extends ZIOSpecDefault {
         _ <- app(Request(url = URL(!! / "videos" / "loadup")))
         expectedBody <- app(Request(url = URL(!! / "videos"))).flatMap(_.bodyAsString)
         videos = expectedBody.fromJson[List[Video]].toOption
-      } yield assertTrue(videos.map(_.map(_.name).toSet==Set("one","two","three", "four","film1")).getOrElse(false))
+      } yield assertTrue(videos.exists(_.map(_.name).toSet == Set("one", "two", "three", "four", "film1")))
     }
   ).provide(InmemoryVideoRepo.layer)
 }

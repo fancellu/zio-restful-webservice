@@ -28,7 +28,7 @@ object DelayApp {
     def bangRandomly() : Task[Response] = {
       for {
         float <- Random.nextFloat
-        _ <- if (float>0.1) printLineError(s"went bang $float") *> ZIO.fail(new Exception("bangRandomly")) else (printLine(s"OK $float") *> ZIO.unit)
+        _ <- if (float>0.1) printLineError(s"went bang $float") *> ZIO.fail(new Exception("bangRandomly")) else printLine(s"OK $float").unit
       } yield Response.text(s"OK")
     }
 

@@ -52,6 +52,14 @@ Using zio 2.0, zio-http, zio-json, quill, H2, twirl
 - http://localhost:8080/stream/videos
   - (Make sure you have some videos in DB, perhaps call http://localhost:8080/videos/loadup)
 
+### ClientApp
+(Client examples talking to external web service https://jsonplaceholder.typicode.com/)
+- http://localhost:8080/client/users
+- http://localhost:8080/client/users/1
+- http://localhost:8080/client/posts
+- http://localhost:8080/client/posts/1
+- http://localhost:8080/client/posts/userId/1 
+
 ## To run
 
 ```scala

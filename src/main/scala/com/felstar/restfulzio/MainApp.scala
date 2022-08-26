@@ -1,5 +1,6 @@
 package com.felstar.restfulzio
 
+import com.felstar.restfulzio.client.ClientApp
 import com.felstar.restfulzio.counter.CounterApp
 import com.felstar.restfulzio.delay.DelayApp
 import com.felstar.restfulzio.download.DownloadApp
@@ -10,7 +11,7 @@ import com.felstar.restfulzio.stream.StreamApp
 import com.felstar.restfulzio.videos.{InmemoryVideoRepo, PersistentVideoRepo, VideoApp}
 import zhttp.http.{Http, HttpApp, Middleware, Response, Status}
 import zhttp.http.middleware.HttpMiddleware
-import zhttp.service.Server
+import zhttp.service.{ChannelFactory, EventLoopGroup, Server}
 import zio.Console.{printLine, printLineError}
 import zio._
 
@@ -41,7 +42,7 @@ object MainApp extends ZIOAppDefault {
         port = 8080,
         http =
           (NoEnvApp() ++ HelloWorldApp() ++ DownloadApp() ++ CounterApp() ++ VideoApp() ++ HelloTwirlApp() ++
-            DelayApp() ++ StreamApp()) @@ middlewares
+            DelayApp() ++ StreamApp() ++ ClientApp()) @@ middlewares
       )
       .provide(
         // For `CounterApp`
@@ -49,8 +50,11 @@ object MainApp extends ZIOAppDefault {
         // For `HelloWorldApp`
         ZLayer.succeed("hello"),
         // To use the H2 DB layer, provide the `PersistentVideoRepo.layer` layer instead
-        InmemoryVideoRepo.layer
+        InmemoryVideoRepo.layer,
         // PersistentVideoRepo.layer
+        // for Client
+        ChannelFactory.auto,
+        EventLoopGroup.auto()
       )
       .exitCode
 }
