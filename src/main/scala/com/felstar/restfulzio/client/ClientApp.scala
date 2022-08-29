@@ -45,7 +45,7 @@ object ClientApp {
         val url = s"$HOST/users/$id"
         for {
           res    <- Client.request(url)
-          string <- res.bodyAsString
+          string <- res.body.asString
           response = Response.json(string).setStatus(res.status)
         } yield response
       // response=>string=>Option[List[Post]]=>json string
@@ -53,7 +53,7 @@ object ClientApp {
         val url = s"$HOST/posts/"
         val json = for {
           res    <- Client.request(url)
-          string <- res.bodyAsString
+          string <- res.body.asString
           posts = string.fromJson[List[Post]].toOption
           json  = posts.toJsonPretty
         } yield json
@@ -63,7 +63,7 @@ object ClientApp {
         val url = s"$HOST/posts/$id"
         for {
           res    <- Client.request(url)
-          string <- res.bodyAsString
+          string <- res.body.asString
         } yield
           if (res.status.isError) Response.text(string).setStatus(res.status)
           else Response.json(string.fromJson[Post].toOption.toJsonPretty)
@@ -71,7 +71,7 @@ object ClientApp {
         val url = s"$HOST/posts?userId=$userId"
         val json = for {
           res    <- Client.request(url)
-          string <- res.bodyAsString
+          string <- res.body.asString
           posts = string.fromJson[List[Post]].toOption
           json  = posts.toJsonPretty
         } yield json

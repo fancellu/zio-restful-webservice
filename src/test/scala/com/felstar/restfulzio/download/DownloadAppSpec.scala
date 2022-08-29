@@ -21,7 +21,7 @@ object DownloadAppSpec extends ZIOSpecDefault {
       val req = Request(url = URL(path))
 
       for {
-        expectedBody <- app(req).flatMap(_.bodyAsString)
+        expectedBody <- app(req).flatMap(_.body.asString)
       } yield assertTrue(expectedBody.contains("end of file"))
     },
     test("should download bigfile.txt") {
@@ -29,7 +29,7 @@ object DownloadAppSpec extends ZIOSpecDefault {
       val req = Request(url = URL(path))
 
       for {
-        expectedBodyFiber <- app(req).flatMap(_.bodyAsString).fork
+        expectedBodyFiber <- app(req).flatMap(_.body.asString).fork
         _ <- TestClock.adjust(10.minutes)
         expectedBody <- expectedBodyFiber.join
       } yield assertTrue(expectedBody.contains("100"))

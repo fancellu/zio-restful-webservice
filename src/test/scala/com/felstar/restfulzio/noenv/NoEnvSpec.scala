@@ -22,7 +22,7 @@ object NoEnvSpec extends ZIOSpecDefault {
 
       // Using a for comprehension this time, and a smart assertion
       for {
-        expectedBody <- app(req).flatMap(_.bodyAsString)
+        expectedBody <- app(req).flatMap(_.body.asString)
       } yield assertTrue(expectedBody == "Hello from noenv")
     }
   )

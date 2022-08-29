@@ -42,7 +42,7 @@ object MainApp extends ZIOAppDefault {
 //    label("message", quoted(line)).highlight
 
 
-  val logger =
+  private val logger =
     Runtime.removeDefaultLoggers >>> console(LogFormat.colored)
 
   def run = {
@@ -64,7 +64,8 @@ object MainApp extends ZIOAppDefault {
         // PersistentVideoRepo.layer
         // for Client
         ChannelFactory.auto,
-        EventLoopGroup.auto()
+        EventLoopGroup.auto(),
+        logger
       )
       .exitCode
   }

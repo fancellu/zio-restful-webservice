@@ -15,7 +15,7 @@ object HelloWorldAppSpec extends ZIOSpecDefault {
       val req = Request(url = URL(path))
 
       for {
-        expectedBody <- app(req).flatMap(_.bodyAsString)
+        expectedBody <- app(req).flatMap(_.body.asString)
       } yield assertTrue(expectedBody == "Hello World!")
     },
     test("should say Hello Dino!") {
@@ -23,7 +23,7 @@ object HelloWorldAppSpec extends ZIOSpecDefault {
       val req = Request(url = URL(path))
 
       for {
-        expectedBody <- app(req).flatMap(_.bodyAsString)
+        expectedBody <- app(req).flatMap(_.body.asString)
       } yield assertTrue(expectedBody == "Hello Dino!")
     },
     test("should say Hello Dino and Milo!") {
@@ -31,7 +31,7 @@ object HelloWorldAppSpec extends ZIOSpecDefault {
       val req = Request(url = URL(path, queryParams = Map("name"->List("Dino","Milo"))))
 
       for {
-        expectedBody <- app(req).flatMap(_.bodyAsString)
+        expectedBody <- app(req).flatMap(_.body.asString)
       } yield assertTrue(expectedBody == "Hello Dino and Milo!")
     }
 

@@ -14,14 +14,14 @@ object CounterAppSpec extends ZIOSpecDefault {
       val req = Request(url = URL(path))
 
       for {
-        expectedBody <- app(req).flatMap(_.bodyAsString)
+        expectedBody <- app(req).flatMap(_.body.asString)
       } yield assertTrue(expectedBody == "101")
     },
     test("up plus down should work") {
       for {
         _ <- app(Request(url = URL(!! / "up"))).repeatN(2) // 3 ups in total
         _ <- app(Request(url = URL(!! / "down")))
-        expectedBody <- app(Request(url = URL(!! / "get"))).flatMap(_.bodyAsString)
+        expectedBody <- app(Request(url = URL(!! / "get"))).flatMap(_.body.asString)
       } yield assertTrue(expectedBody == "102")
     },
     test("down should work") {
@@ -29,7 +29,7 @@ object CounterAppSpec extends ZIOSpecDefault {
       val req = Request(url = URL(path))
 
       for {
-        expectedBody <- app(req).flatMap(_.bodyAsString)
+        expectedBody <- app(req).flatMap(_.body.asString)
       } yield assertTrue(expectedBody == "99")
     },
     test("get should work") {
@@ -37,7 +37,7 @@ object CounterAppSpec extends ZIOSpecDefault {
       val req = Request(url = URL(path))
 
       for {
-        expectedBody <- app(req).flatMap(_.bodyAsString)
+        expectedBody <- app(req).flatMap(_.body.asString)
       } yield assertTrue(expectedBody == "100")
     },
     test("reset should work") {
@@ -45,7 +45,7 @@ object CounterAppSpec extends ZIOSpecDefault {
       val req = Request(url = URL(path))
 
       for {
-        expectedBody <- app(req).flatMap(_.bodyAsString)
+        expectedBody <- app(req).flatMap(_.body.asString)
       } yield assertTrue(expectedBody == "0")
     }
 

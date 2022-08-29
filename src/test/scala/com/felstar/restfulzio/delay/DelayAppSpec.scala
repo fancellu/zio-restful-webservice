@@ -16,7 +16,7 @@ object DelayAppSpec extends ZIOSpecDefault {
       val req = Request(url = URL(path))
 
       for {
-        expectedBodyFiber <- app(req).flatMap(_.bodyAsString).fork
+        expectedBodyFiber <- app(req).flatMap(_.body.asString).fork
         _ <- TestClock.adjust(10.seconds)
         expectedBody <- expectedBodyFiber.join
       } yield assertTrue(expectedBody.contains("Hello from delay, slept for 3 seconds"))
@@ -26,7 +26,7 @@ object DelayAppSpec extends ZIOSpecDefault {
       val req = Request(url = URL(path))
 
       for {
-        expectedBodyFiber <- app(req).flatMap(_.bodyAsString).fork
+        expectedBodyFiber <- app(req).flatMap(_.body.asString).fork
         _ <- TestClock.adjust(10.seconds)
         expectedBody <- expectedBodyFiber.join
       } yield assertTrue(expectedBody.contains("Hello from delay, slept for 2 seconds"))
@@ -36,7 +36,7 @@ object DelayAppSpec extends ZIOSpecDefault {
       val req = Request(url = URL(path))
 
       for {
-        expectedBodyFiber <- app(req).flatMap(_.bodyAsString).fork
+        expectedBodyFiber <- app(req).flatMap(_.body.asString).fork
         _ <- TestClock.adjust(10.seconds)
         exitValue <- expectedBodyFiber.await
       } yield assertTrue(exitValue.isFailure)
@@ -46,7 +46,7 @@ object DelayAppSpec extends ZIOSpecDefault {
       val req = Request(url = URL(path))
 
       for {
-        expectedBodyFiber <- app(req).flatMap(_.bodyAsString).fork
+        expectedBodyFiber <- app(req).flatMap(_.body.asString).fork
         _ <- TestClock.adjust(10.seconds)
         exitValue <- expectedBodyFiber.await
       } yield assertTrue(exitValue.isSuccess)

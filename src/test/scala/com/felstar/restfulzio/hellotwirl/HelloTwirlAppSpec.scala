@@ -14,7 +14,7 @@ object HelloTwirlAppSpec extends ZIOSpecDefault {
       val req = Request(url = URL(path))
 
       for {
-        expectedBody <- app(req).flatMap(_.bodyAsString)
+        expectedBody <- app(req).flatMap(_.body.asString)
       } yield assertTrue(expectedBody.contains("Just a twirl template with a passed parameter defaultstring"))
     },
     test("should say run twirl template with Dino") {
@@ -22,7 +22,7 @@ object HelloTwirlAppSpec extends ZIOSpecDefault {
       val req = Request(url = URL(path))
 
       for {
-        expectedBody <- app(req).flatMap(_.bodyAsString)
+        expectedBody <- app(req).flatMap(_.body.asString)
       } yield assertTrue(expectedBody.contains("Just a twirl template with a passed parameter Dino"))
     }
   )

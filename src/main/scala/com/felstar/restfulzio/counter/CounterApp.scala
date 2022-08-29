@@ -33,7 +33,6 @@ object CounterApp {
             .tap { i => ZIO.logInfo(s"Reset to $i") }
             .map(_.toString)
             .map(Response.text)
-      }.provideLayer(MainApp.logger) // I have to specify here due to a bug in RC10
-      // https://github.com/dream11/zio-http/issues/1352
+      }
     }
 }

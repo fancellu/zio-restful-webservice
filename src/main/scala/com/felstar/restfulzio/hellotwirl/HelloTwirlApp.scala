@@ -20,13 +20,13 @@ object HelloTwirlApp {
       // GET /hellotwirl/:string
       case Method.GET -> !! / "hellotwirl" / string  =>
         Response(
-          data = HttpData.fromString(hellotwirl.render(string).toString),
+          body = Body.fromString(hellotwirl.render(string).toString),
           headers = textHTML
         )
       // GET /hellotwirl
       case Method.GET -> !! / "hellotwirl" =>
         Response(
-          data = HttpData.fromString(hellotwirl.render("defaultstring").toString),
+          body = Body.fromString(hellotwirl.render("defaultstring").toString),
           headers = textHTML
         )
     }
