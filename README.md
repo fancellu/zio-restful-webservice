@@ -60,6 +60,14 @@ Using zio 2.0, zio-http, zio-json, quill, H2, twirl
 - http://localhost:8080/client/posts/1
 - http://localhost:8080/client/posts/userId/1 
 
+### StaticApp
+(Static file server from static dir)
+- http://localhost:8080
+- http://localhost:8080/subdir
+- http://localhost:8080/subdir/test3.txt 
+- http://localhost:8080/test.txt
+- http://localhost:8080/test2.txt
+
 ## To run
 
 ```scala

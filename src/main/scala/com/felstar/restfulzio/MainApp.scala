@@ -7,6 +7,7 @@ import com.felstar.restfulzio.download.DownloadApp
 import com.felstar.restfulzio.hellotwirl.HelloTwirlApp
 import com.felstar.restfulzio.helloworld.HelloWorldApp
 import com.felstar.restfulzio.noenv.NoEnvApp
+import com.felstar.restfulzio.staticserver.example.StaticApp
 import com.felstar.restfulzio.stream.StreamApp
 import com.felstar.restfulzio.videos.{InmemoryVideoRepo, PersistentVideoRepo, VideoApp}
 import zhttp.http.{Http, HttpApp, Middleware, Response, Status}
@@ -35,7 +36,7 @@ object MainApp extends ZIOAppDefault {
         }
   }
 
-  val middlewares = Middleware.dropTrailingSlash ++ errorMiddleware
+  val middlewares = errorMiddleware // ++ Middleware.dropTrailingSlash
 
   val myLogFormat =  label("xx", timestamp.fixed(32)).color(LogColor.BLUE) // |-|
 //    label("level", level).highlight |-|
@@ -52,7 +53,7 @@ object MainApp extends ZIOAppDefault {
         port = 8080,
         http =
           ((NoEnvApp() ++ HelloWorldApp() ++ DownloadApp() ++ CounterApp() ++ VideoApp() ++ HelloTwirlApp() ++
-            DelayApp() ++ StreamApp() ++ ClientApp()) @@ middlewares)
+            DelayApp() ++ StreamApp() ++ ClientApp() ++ StaticApp()) @@ middlewares)
       )
       .provide(
         // For `CounterApp`
