@@ -42,10 +42,6 @@ object MainApp extends ZIOAppDefault {
 
   val middlewares = errorMiddleware // ++ Middleware.dropTrailingSlash
 
-  val myLogFormat = label("xx", timestamp.fixed(32)).color(LogColor.BLUE) // |-|
-//    label("level", level).highlight |-|
-//    label("message", quoted(line)).highlight
-
   private val logger =
     Runtime.removeDefaultLoggers >>> console(LogFormat.colored)
 
