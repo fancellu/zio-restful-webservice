@@ -9,7 +9,11 @@ import com.felstar.restfulzio.helloworld.HelloWorldApp
 import com.felstar.restfulzio.noenv.NoEnvApp
 import com.felstar.restfulzio.staticserver.example.StaticApp
 import com.felstar.restfulzio.stream.StreamApp
-import com.felstar.restfulzio.videos.{InmemoryVideoRepo, PersistentVideoRepo, VideoApp}
+import com.felstar.restfulzio.videos.{
+  InmemoryVideoRepo,
+  PersistentVideoRepo,
+  VideoApp
+}
 import zhttp.http.{Http, HttpApp, Middleware, Response, Status}
 import zhttp.http.middleware.HttpMiddleware
 import zhttp.service.{ChannelFactory, EventLoopGroup, Server}
@@ -38,17 +42,16 @@ object MainApp extends ZIOAppDefault {
 
   val middlewares = errorMiddleware // ++ Middleware.dropTrailingSlash
 
-  val myLogFormat =  label("xx", timestamp.fixed(32)).color(LogColor.BLUE) // |-|
+  val myLogFormat = label("xx", timestamp.fixed(32)).color(LogColor.BLUE) // |-|
 //    label("level", level).highlight |-|
 //    label("message", quoted(line)).highlight
-
 
   private val logger =
     Runtime.removeDefaultLoggers >>> console(LogFormat.colored)
 
-  def run = {
-    ZIO.logInfo("Starting up").provide(logger) *>
-    Server
+  def run = for {
+    _ <- ZIO.logInfo("Starting up").provide(logger)
+    server <- Server
       .start(
         port = 8080,
         http =
@@ -68,6 +71,9 @@ object MainApp extends ZIOAppDefault {
         EventLoopGroup.auto(),
         logger
       )
-      .exitCode
-  }
+      .fork
+    _ <- Console.readLine("Press enter to stop the server\n")
+    _ <- Console.printLine("Interrupting server")
+    _ <- server.interrupt
+  } yield ()
 }
