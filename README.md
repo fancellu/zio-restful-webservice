@@ -1,6 +1,6 @@
 # ZIO Restful webservice example
 
-Using zio 2.0, zio-http, zio-json, quill, H2, twirl
+Using zio 2.0, zio-http, zio-json, quill, H2, twirl, zio-logging, zio-cache
 
 ## Apps
 
@@ -55,7 +55,7 @@ Using zio 2.0, zio-http, zio-json, quill, H2, twirl
 ### ClientApp
 (Client examples talking to external web service https://jsonplaceholder.typicode.com/)
 - http://localhost:8080/client/users
-- http://localhost:8080/client/users/1
+- http://localhost:8080/client/users/1 (Is Cached, TTL 15 seconds)
 - http://localhost:8080/client/posts
 - http://localhost:8080/client/posts/1
 - http://localhost:8080/client/posts/userId/1 

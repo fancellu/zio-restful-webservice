@@ -8,7 +8,8 @@ libraryDependencies ++= Seq(
   "io.d11"          %% "zhttp"          % "2.0.0-RC11",
   "io.getquill"     %% "quill-zio"      % "4.2.0",
   "io.getquill"     %% "quill-jdbc-zio" % "4.2.0",
-  "com.h2database"  % "h2"              % "2.1.214"
+  "com.h2database"  % "h2"              % "2.1.214",
+  "dev.zio"         %% "zio-cache"      % "0.2.0"
 )
 
 libraryDependencies ++= Seq(
