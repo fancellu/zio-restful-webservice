@@ -4,7 +4,14 @@ import zhttp.http._
 import zhttp.service.{ChannelFactory, Client, EventLoopGroup}
 import zio.Console.printLine
 import zio.Duration._
-import zio.json.{DecoderOps, DeriveJsonDecoder, DeriveJsonEncoder, EncoderOps, JsonDecoder, JsonEncoder}
+import zio.json.{
+  DecoderOps,
+  DeriveJsonDecoder,
+  DeriveJsonEncoder,
+  EncoderOps,
+  JsonDecoder,
+  JsonEncoder
+}
 import zio.cache.{Cache, Lookup}
 import zio.{URIO, ZIO, durationInt}
 
@@ -26,34 +33,61 @@ object ClientApp {
 
   val HOST = "https://jsonplaceholder.typicode.com"
 
-  def getUser(key: Int): ZIO[EventLoopGroup with ChannelFactory, Throwable, Response] ={
+  def getUser(
+      key: Int
+  ): ZIO[EventLoopGroup with ChannelFactory, Throwable, Response] = {
     val url = s"$HOST/users/$key"
     for {
-      res <- Client.request(url)
-      _ <- ZIO.logInfo(s"Called $url")
+      res    <- Client.request(url)
+      _      <- ZIO.logInfo(s"Called $url")
       string <- res.body.asString
       response = Response.json(string).setStatus(res.status)
     } yield response
   }
 
-  def apply()
-      : Http[EventLoopGroup with ChannelFactory with Cache[Int, Throwable, Response], Throwable, Request, Response] =
+  def apply(): Http[
+    EventLoopGroup with ChannelFactory with Cache[Int, Throwable, Response],
+    Throwable,
+    Request,
+    Response
+  ] =
     Http.collectZIO[Request] {
       // directly passing on response
       case Method.GET -> !! / "client" / "users" =>
         val url = s"$HOST/users"
         for {
           res <- Client.request(url)
-          _ <- ZIO.logInfo(s"Called $url")
+          _   <- ZIO.logInfo(s"Called $url")
         } yield res
       // getting json string and creating response from that
       case Method.GET -> !! / "client" / "users" / int(id) =>
         ZIO.service[Cache[Int, Throwable, Response]].flatMap(_.get(id))
+      case Method.GET -> !! / "client" / "dopost" =>
+        val url = s"$HOST/posts/"
+        val json = for {
+          res <- Client.request(
+            url,
+            method = Method.POST,
+            headers =
+              Headers("Content-type" -> "application/json; charset=UTF-8"),
+            content = Body.fromString("""{
+               |"title": "Hello",
+               |"body": "World",
+               |"userId": "1"
+               |}
+              |""".stripMargin)
+          )
+          _      <- ZIO.logInfo(s"Called $url")
+          string <- res.body.asString
+          post = string.fromJson[Post].toOption
+          json = post.toJsonPretty
+        } yield json
+        json.map(Response.json(_))
       case Method.GET -> !! / "client" / "posts" =>
         val url = s"$HOST/posts/"
         val json = for {
           res    <- Client.request(url)
-          _ <- ZIO.logInfo(s"Called $url")
+          _      <- ZIO.logInfo(s"Called $url")
           string <- res.body.asString
           posts = string.fromJson[List[Post]].toOption
           json  = posts.toJsonPretty
@@ -64,7 +98,7 @@ object ClientApp {
         val url = s"$HOST/posts/$id"
         for {
           res    <- Client.request(url)
-          _ <- ZIO.logInfo(s"Called $url")
+          _      <- ZIO.logInfo(s"Called $url")
           string <- res.body.asString
         } yield
           if (res.status.isError) Response.text(string).setStatus(res.status)
@@ -73,7 +107,7 @@ object ClientApp {
         val url = s"$HOST/posts?userId=$userId"
         val json = for {
           res    <- Client.request(url)
-          _ <- ZIO.logInfo(s"Called $url")
+          _      <- ZIO.logInfo(s"Called $url")
           string <- res.body.asString
           posts = string.fromJson[List[Post]].toOption
           json  = posts.toJsonPretty

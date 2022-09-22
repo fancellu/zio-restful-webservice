@@ -59,6 +59,7 @@ Using zio 2.0, zio-http, zio-json, quill, H2, twirl, zio-logging, zio-cache
 - http://localhost:8080/client/posts
 - http://localhost:8080/client/posts/1
 - http://localhost:8080/client/posts/userId/1 
+- http://localhost:8080/client/dopost
 
 ### StaticApp
 (Static file server from static dir)
