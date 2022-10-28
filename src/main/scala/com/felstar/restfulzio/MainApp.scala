@@ -11,7 +11,7 @@ import com.felstar.restfulzio.noenv.NoEnvApp
 import com.felstar.restfulzio.staticserver.example.StaticApp
 import com.felstar.restfulzio.stream.StreamApp
 import com.felstar.restfulzio.videos.{InmemoryVideoRepo, PersistentVideoRepo, VideoApp}
-import zhttp.http.{Http, HttpApp, Middleware, Response, Status}
+import zhttp.http.{Http, HttpApp, Middleware, Request, Response, Status}
 import zhttp.http.middleware.HttpMiddleware
 import zhttp.service.{ChannelFactory, EventLoopGroup, Server}
 import zio._
@@ -19,6 +19,8 @@ import zio.cache.{Cache, Lookup}
 import zio.logging.{LogFormat, console}
 
 import java.io.IOException
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 object MainApp extends ZIOAppDefault {
 
@@ -42,7 +44,9 @@ object MainApp extends ZIOAppDefault {
   private val logger =
     Runtime.removeDefaultLoggers >>> console(LogFormat.colored)
 
-  val serverSetup = Server.port(8080) ++ Server.app((NoEnvApp() ++ HelloWorldApp() ++ DownloadApp() ++
+  val requestMiddleWare=Middleware.identity[Request, Response].contramap[Request](_.addHeader("Seen", DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(LocalDateTime.now())))
+
+  val serverSetup = Server.port(8080) ++ Server.app((NoEnvApp() @@ requestMiddleWare ++ HelloWorldApp() ++ DownloadApp() ++
     CounterApp() ++ VideoApp() ++ HelloTwirlApp() ++
     DelayApp() ++ StreamApp() ++ ClientApp() ++ StaticApp()) @@ middlewares)
 

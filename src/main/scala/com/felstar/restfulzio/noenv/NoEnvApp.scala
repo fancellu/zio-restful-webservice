@@ -15,6 +15,7 @@ object NoEnvApp {
       Http.collect[Request] {
         // GET /noenv
         case Method.GET -> !! / "noenv" => Response.text(s"Hello from noenv")
+        case req @ Method.GET -> !! / "headers" => Response.text(s"""headers are ${req.headers.toList.mkString("\n")}""")
       }
 
 }

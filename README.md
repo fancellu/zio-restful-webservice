@@ -7,6 +7,7 @@ Using zio 2.0, zio-http, zio-json, quill, H2, twirl, zio-logging, zio-cache
 ### NoEnvApp
 (no use of Environment)
   - http://localhost:8080/noenv
+  - http://localhost:8080/headers (shows headers and use of request altering middleware, note "Seen" header)
 
 ### HelloWorldApp
 (Takes a String as app root name)
