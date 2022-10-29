@@ -6,7 +6,7 @@ import zio.test.Assertion.equalTo
 
 object NoEnvSpec extends ZIOSpecDefault {
 
-  val app = NoEnvApp()
+  private val app = NoEnvApp()
 
   def spec = suite("NoEnvSpec")(
     test("should be ok") {

@@ -8,7 +8,7 @@ import zio.test._
 
 object DelayAppSpec extends ZIOSpecDefault {
 
-  val app = DelayApp()
+  private val app = DelayApp()
 
   def spec = suite("DelayAppSpec")(
     test("should say Hello from delay, slept for 3 seconds") {

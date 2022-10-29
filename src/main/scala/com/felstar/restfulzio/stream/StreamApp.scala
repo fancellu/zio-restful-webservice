@@ -19,7 +19,7 @@ object StreamApp {
 
   val incrementing: ZStream[Any, Nothing, String] = ZStream.range(0, 50).map(i => s"$i\n").schedule(Schedule.spaced(100.millis))
 
-  val headers= Headers(
+  private val headers= Headers(
     ("Content-Type", "application/octet-stream"),
     ("Content-Disposition", s"attachment; filename=stream.txt")
   )

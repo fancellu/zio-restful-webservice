@@ -6,7 +6,7 @@ import zio.test._
 
 object CounterAppSpec extends ZIOSpecDefault {
 
-  val app = CounterApp()
+  private val app = CounterApp()
 
   def spec = suite("CounterAppSpec")(
     test("up should work") {

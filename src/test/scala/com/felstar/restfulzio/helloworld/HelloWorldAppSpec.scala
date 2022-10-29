@@ -7,7 +7,7 @@ import zio.test.Assertion.equalTo
 
 object HelloWorldAppSpec extends ZIOSpecDefault {
 
-  val app = HelloWorldApp()
+  private val app = HelloWorldApp()
 
   def spec = suite("HelloWorldAppSpec")(
     test("should say Hello World!") {

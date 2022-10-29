@@ -6,7 +6,7 @@ import zio.test._
 
 object HelloTwirlAppSpec extends ZIOSpecDefault {
 
-  val app = HelloTwirlApp()
+  private val app = HelloTwirlApp()
 
   def spec = suite("HelloTwirlAppSpec")(
     test("should say run twirl template with default") {

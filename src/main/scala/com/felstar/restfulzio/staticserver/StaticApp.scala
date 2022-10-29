@@ -1,7 +1,5 @@
 package com.felstar.restfulzio.staticserver
 
-package example
-
 import zhttp.html._
 import zhttp.http._
 import zio.Console.printLine
@@ -15,11 +13,6 @@ object StaticApp {
   def pathToHttp(path: Path)={
     val myfile = new File("static", path.encode)
     for {
-//      _ <- Http.fromZIO(printLine(s"path=$path"))
-//      _ <- Http.fromZIO(printLine(path.encode))
-//      _ <- Http.fromZIO(printLine(s"isDir ${myfile.isDirectory}"))
-//      _ <- Http.fromZIO(printLine(s"isFile ${myfile.isFile}"))
-//      _ <- Http.fromZIO(printLine(s"exists ${myfile.exists()}"))
       http <-
         if (myfile.isDirectory) {
           val files = myfile.listFiles.toList.sortBy(_.getName)

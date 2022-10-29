@@ -8,7 +8,7 @@ import com.felstar.restfulzio.download.DownloadApp
 import com.felstar.restfulzio.hellotwirl.HelloTwirlApp
 import com.felstar.restfulzio.helloworld.HelloWorldApp
 import com.felstar.restfulzio.noenv.NoEnvApp
-import com.felstar.restfulzio.staticserver.example.StaticApp
+import com.felstar.restfulzio.staticserver.StaticApp
 import com.felstar.restfulzio.stream.StreamApp
 import com.felstar.restfulzio.videos.{InmemoryVideoRepo, PersistentVideoRepo, VideoApp}
 import zhttp.http.{Http, HttpApp, Middleware, Request, Response, Status}

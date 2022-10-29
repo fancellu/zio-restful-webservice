@@ -11,9 +11,7 @@ import java.util.concurrent.TimeUnit
 
 object DownloadAppSpec extends ZIOSpecDefault {
 
-  val app = DownloadApp()
-
-
+  private val app = DownloadApp()
 
   def spec = suite("DownloadAppSpec")(
     test("should download file.txt") {

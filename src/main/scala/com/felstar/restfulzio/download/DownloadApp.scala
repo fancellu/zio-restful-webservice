@@ -21,7 +21,7 @@ object DownloadApp {
         Http.fromStream(ZStream.fromResource(fileName)).setHeaders(
           Headers(
             ("Content-Type", "application/octet-stream"),
-            ("Content-Disposition", s"attachment; filename=${fileName}")
+            ("Content-Disposition", s"attachment; filename=$fileName")
           )
         )
 
@@ -35,7 +35,7 @@ object DownloadApp {
         ).setHeaders(
           Headers(
             ("Content-Type", "application/octet-stream"),
-            ("Content-Disposition", s"attachment; filename=${file}")
+            ("Content-Disposition", s"attachment; filename=$file")
           )
         )
     }
