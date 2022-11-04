@@ -10,6 +10,7 @@ Using zio 2.0, zio-http, zio-json, quill, H2, twirl, zio-logging, zio-cache
   - http://localhost:8080/headers (shows headers and use of request altering middleware, note "Seen" header)
   - http://localhost:8080/simplepost (POST some json, e.g. ```{"string": "hello"}```)
   - http://localhost:8080/simplepost2 (The same but using an implicit class to clean up parsing a bit)
+  - http://localhost:8080/simplepostcodec (The same but using MiddlewareCodec magic)
 
 ### HelloWorldApp
 (Takes a String as app root name)
