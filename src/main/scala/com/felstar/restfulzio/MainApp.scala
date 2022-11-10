@@ -1,5 +1,6 @@
 package com.felstar.restfulzio
 
+import com.felstar.restfulzio.actors.ActorsApp
 import com.felstar.restfulzio.client.ClientApp
 import com.felstar.restfulzio.client.ClientApp.getUser
 import com.felstar.restfulzio.counter.CounterApp
@@ -9,6 +10,7 @@ import com.felstar.restfulzio.hellotwirl.HelloTwirlApp
 import com.felstar.restfulzio.helloworld.HelloWorldApp
 import com.felstar.restfulzio.noenv.NoEnvApp
 import com.felstar.restfulzio.staticserver.StaticApp
+import com.felstar.restfulzio.actors.ActorsApp
 import com.felstar.restfulzio.stream.StreamApp
 import com.felstar.restfulzio.videos.{InmemoryVideoRepo, PersistentVideoRepo, VideoApp}
 import zhttp.http.{Http, HttpApp, Middleware, Request, Response, Status}
@@ -46,8 +48,8 @@ object MainApp extends ZIOAppDefault {
 
   val requestMiddleWare=Middleware.identity[Request, Response].contramap[Request](_.addHeader("Seen", DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(LocalDateTime.now())))
 
-  val serverSetup = Server.port(8080) ++ Server.app((NoEnvApp() @@ requestMiddleWare ++ HelloWorldApp() ++ DownloadApp() ++
-    CounterApp() ++ VideoApp() ++ HelloTwirlApp() ++
+  val serverSetup = Server.port(8080) ++ Server.app((NoEnvApp()  ++ HelloWorldApp() ++ DownloadApp() ++
+    CounterApp() ++ VideoApp() ++ HelloTwirlApp() ++ ActorsApp() ++
     DelayApp() ++ StreamApp() ++ ClientApp() ++ StaticApp()) @@ middlewares)
 
   val userCache: URIO[EventLoopGroup with ChannelFactory, Cache[Int, Throwable, Response]] = Cache.make(

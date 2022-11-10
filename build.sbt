@@ -9,7 +9,8 @@ libraryDependencies ++= Seq(
   "io.getquill"     %% "quill-zio"      % "4.6.0",
   "io.getquill"     %% "quill-jdbc-zio" % "4.6.0",
   "com.h2database"  % "h2"              % "2.1.214",
-  "dev.zio"         %% "zio-cache"      % "0.2.0"
+  "dev.zio"         %% "zio-cache"      % "0.2.0",
+  "dev.zio" %% "zio-actors" % "0.1.0"
 )
 
 libraryDependencies ++= Seq(
@@ -19,7 +20,8 @@ libraryDependencies ++= Seq(
 
 scalacOptions ++= Seq(
   "-Ywarn-value-discard",
-  "-Xfatal-warnings"
+  "-Xfatal-warnings",
+  "-deprecation"
 )
 
 testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")

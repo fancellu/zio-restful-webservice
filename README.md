@@ -1,6 +1,6 @@
 # ZIO Restful webservice example
 
-Using zio 2.0, zio-http, zio-json, quill, H2, twirl, zio-logging, zio-cache
+Using zio 2.0, zio-http, zio-json, quill, H2, twirl, zio-logging, zio-cache, zio-actors
 
 ## Apps
 
@@ -72,6 +72,14 @@ Using zio 2.0, zio-http, zio-json, quill, H2, twirl, zio-logging, zio-cache
 - http://localhost:8080/subdir/test3.txt 
 - http://localhost:8080/test.txt
 - http://localhost:8080/test2.txt
+
+### ActorsApp
+- http://localhost:8080/actors
+- http://localhost:8080/actors/[int]
+- http://localhost:8080/nodie
+- http://localhost:8080/catchAll
+- http://localhost:8080/randomString
+
 
 ## To run
 
