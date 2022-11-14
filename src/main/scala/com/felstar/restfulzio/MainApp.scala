@@ -60,8 +60,8 @@ object MainApp extends ZIOAppDefault {
 
   def run = for {
     _ <- ZIO.logInfo("Starting up").provide(logger)
-    zioAppArgs <- ZIO.service[ZIOAppArgs] // to get command line params
-    _ <- ZIO.logInfo(zioAppArgs.toString).provide(logger)
+    args <- getArgs // to get command line params
+    _ <- ZIO.logInfo(args.toString).provide(logger)
     serverFibre <- serverSetup.startDefault
       .provide(
         // For `CounterApp`
