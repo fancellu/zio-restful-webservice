@@ -1,6 +1,6 @@
 package com.felstar.restfulzio.download
 
-import zhttp.http._
+import zio.http._
 import zio.Clock.currentTime
 import zio.Console.print
 import zio.Console.printLine
@@ -16,7 +16,7 @@ object DownloadAppSpec extends ZIOSpecDefault {
   def spec = suite("DownloadAppSpec")(
     test("should download file.txt") {
       val path = !! / "download"
-      val req = Request(url = URL(path))
+      val req = Request.get(url = URL(path))
 
       for {
         expectedBody <- app(req).flatMap(_.body.asString)
@@ -24,7 +24,7 @@ object DownloadAppSpec extends ZIOSpecDefault {
     },
     test("should download bigfile.txt") {
       val path = !! / "download" / "stream"
-      val req = Request(url = URL(path))
+      val req = Request.get(url = URL(path))
 
       for {
         expectedBodyFiber <- app(req).flatMap(_.body.asString).fork

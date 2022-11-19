@@ -1,8 +1,9 @@
 package com.felstar.restfulzio.counter
 
 import com.felstar.restfulzio.MainApp
-import zhttp.http._
-import zio.{Ref, ZIO}
+import zio._
+import zio.http._
+import zio.http.model.Method
 
 /** An http app that:
   *   - Accepts `Request` and returns a `Response`

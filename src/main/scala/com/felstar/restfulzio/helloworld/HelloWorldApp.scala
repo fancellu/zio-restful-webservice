@@ -1,7 +1,8 @@
 package com.felstar.restfulzio.helloworld
 
-import zhttp.http._
-import zio.ZIO
+import zio._
+import zio.http._
+import zio.http.model.Method
 
 /**
  * An http app that: 

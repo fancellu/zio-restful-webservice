@@ -2,16 +2,18 @@ package com.felstar.restfulzio.noenv
 
 import com.felstar.restfulzio.client.Post
 import com.felstar.restfulzio.noenv
-import zhttp.http.{Http, _}
-import zhttp.service.{ChannelFactory, Client, EventLoopGroup}
 import zio.Console.printLine
 import zio.Duration._
 import zio.json.{DecoderOps, DeriveJsonDecoder, DeriveJsonEncoder, EncoderOps, JsonDecoder, JsonEncoder}
 import zio.cache.{Cache, Lookup}
+import zio.http.model.{HttpError, Method}
+import zio.http.model.Method
+import zio.http.{Http, Middleware, Request, Response}
 import zio.{URIO, ZIO, durationInt}
 import zio.json._
-import zhttp.http.middleware._
-import zhttp.http.middleware.HttpMiddleware
+import zio._
+import zio.http._
+import zio.http.model.Method
 
 import scala.language.postfixOps
 
@@ -63,12 +65,17 @@ object NoEnvApp {
 
     val simplePostCodec: Http[Any, Nothing, Request, Response] = simplePostService @@ codecMiddleware[SimplePost, String]
 
-    Http.collect[Request] {
+    val codecPost: Http[Any, Nothing, Request, Response] = Http.collectZIO[Request] {
+      case req@Method.POST -> !! / "simplepostcodec" => simplePostCodec(req).orElse(ZIO.never)
+    }
+
+    val first: Http[Any, Nothing, Request, Response] = Http.collect[Request] {
       // GET /noenv
       case Method.GET -> !! / "noenv" => Response.text(s"Hello from noenv")
       case req@Method.GET -> !! / "headers" => Response.text(s"""headers are ${req.headers.toList.mkString("\n")}""")
-    } ++
-    Http.collectZIO[Request] {
+    }
+
+    val second: Http[Any, Nothing, Request, Response] = Http.collectZIO[Request] {
       case req@Method.POST -> !! / "simplepost" =>
         for {
           stringIn <- req.body.asString.orDie
@@ -77,13 +84,12 @@ object NoEnvApp {
         } yield Response.text(s"post is $stringOut")
       case req@Method.POST -> !! / "simplepost2" => // using implicit class to add to Request
         for {
-          simplePostOption<- req.simplePostOptionZIO
+          simplePostOption <- req.simplePostOptionZIO
           stringOut = simplePostOption.map(_.toString).getOrElse("")
         } yield Response.text(s"post is $stringOut")
-    } ++
-      Http.collectZIO[Request]  {
-      case req@Method.POST -> !! / "simplepostcodec" => simplePostCodec(req).orElse(ZIO.never)
     }
+
+    first ++ second  ++  codecPost
   }
 
 }

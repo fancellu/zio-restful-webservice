@@ -1,9 +1,9 @@
 package com.felstar.restfulzio.hellotwirl
 
-import zhttp.http._
 import html.hellotwirl
-
+import zio.http.{html, _}
 import io.netty.handler.codec.http.{HttpHeaderNames, HttpHeaderValues}
+import zio.http.model.{Headers, Method}
 
 /** An http app that:
   *   - Accepts a `Request` and returns a `Response`

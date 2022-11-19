@@ -1,8 +1,11 @@
 package com.felstar.restfulzio.staticserver
 
-import zhttp.html._
-import zhttp.http._
+
+import zio._
+import zio.http._
+import zio.http.html._
 import zio.Console.printLine
+import zio.http.model.Method
 
 import java.io.File
 

@@ -1,6 +1,6 @@
 package com.felstar.restfulzio.hellotwirl
 
-import zhttp.http._
+import zio.http._
 import zio.ZLayer
 import zio.test._
 
@@ -11,7 +11,7 @@ object HelloTwirlAppSpec extends ZIOSpecDefault {
   def spec = suite("HelloTwirlAppSpec")(
     test("should say run twirl template with default") {
       val path = !! / "hellotwirl"
-      val req = Request(url = URL(path))
+      val req = Request.get(url = URL(path))
 
       for {
         expectedBody <- app(req).flatMap(_.body.asString)
@@ -19,7 +19,7 @@ object HelloTwirlAppSpec extends ZIOSpecDefault {
     },
     test("should say run twirl template with Dino") {
       val path = !! / "hellotwirl" / "Dino"
-      val req = Request(url = URL(path))
+      val req = Request.get(url = URL(path))
 
       for {
         expectedBody <- app(req).flatMap(_.body.asString)

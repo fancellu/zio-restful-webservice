@@ -1,8 +1,9 @@
 package com.felstar.restfulzio.download
 
-import zhttp.http._
-import zio._
 import zio.stream.ZStream
+import zio._
+import zio.http._
+import zio.http.model.{Header, Headers, Method}
 
 import scala.concurrent.duration.DurationDouble
 
@@ -20,8 +21,8 @@ object DownloadApp {
         val fileName = "file.txt"
         Http.fromStream(ZStream.fromResource(fileName)).setHeaders(
           Headers(
-            ("Content-Type", "application/octet-stream"),
-            ("Content-Disposition", s"attachment; filename=$fileName")
+            Header("Content-Type", "application/octet-stream"),
+            Header("Content-Disposition", s"attachment; filename=$fileName")
           )
         )
 
@@ -34,8 +35,8 @@ object DownloadApp {
             .schedule(Schedule.spaced(10.millis))
         ).setHeaders(
           Headers(
-            ("Content-Type", "application/octet-stream"),
-            ("Content-Disposition", s"attachment; filename=$file")
+            Header("Content-Type", "application/octet-stream"),
+            Header("Content-Disposition", s"attachment; filename=$file")
           )
         )
     }

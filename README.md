@@ -2,6 +2,8 @@
 
 Using zio 2.0, zio-http, zio-json, quill, H2, twirl, zio-logging, zio-cache, zio-actors
 
+Now targeting zio-http 0.0.3
+
 ## Apps
 
 ### NoEnvApp
@@ -40,7 +42,7 @@ Using zio 2.0, zio-http, zio-json, quill, H2, twirl, zio-logging, zio-cache, zio
   - POST http://localhost:8080/videos/:name
   - http://localhost:8080/videos
   - http://localhost:8080/videos/loadup
-  - http://localhost:8080/videos/:name 
+  - http://localhost:8080/videos/:uuid 
 
 ### DelayApp
 (Semantically sleeps for a while, no thread blocking, useful for emulating slow queries)

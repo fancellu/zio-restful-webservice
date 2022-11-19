@@ -1,19 +1,12 @@
 package com.felstar.restfulzio.client
 
-import zhttp.http._
-import zhttp.service.{ChannelFactory, Client, EventLoopGroup}
 import zio.Console.printLine
 import zio.Duration._
-import zio.json.{
-  DecoderOps,
-  DeriveJsonDecoder,
-  DeriveJsonEncoder,
-  EncoderOps,
-  JsonDecoder,
-  JsonEncoder
-}
+import zio.json.{DecoderOps, DeriveJsonDecoder, DeriveJsonEncoder, EncoderOps, JsonDecoder, JsonEncoder}
 import zio.cache.{Cache, Lookup}
 import zio.{URIO, ZIO, durationInt}
+import zio.http._
+import zio.http.model.{Header, Headers, Method}
 
 case class Post(userId: Int, id: Int, title: String, body: String)
 
@@ -34,19 +27,19 @@ object ClientApp {
   val HOST = "https://jsonplaceholder.typicode.com"
 
   def getUser(
-      key: Int
-  ): ZIO[EventLoopGroup with ChannelFactory, Throwable, Response] = {
+               key: Int
+             ): ZIO[Client, Throwable, Response] = {
     val url = s"$HOST/users/$key"
     for {
-      res    <- Client.request(url)
-      _      <- ZIO.logInfo(s"Called $url")
+      res <- Client.request(url)
+      _ <- ZIO.logInfo(s"Called $url")
       string <- res.body.asString
       response = Response.json(string).setStatus(res.status)
     } yield response
   }
 
   def apply(): Http[
-    EventLoopGroup with ChannelFactory with Cache[Int, Throwable, Response],
+    Client with Cache[Int, Throwable, Response],
     Throwable,
     Request,
     Response
@@ -69,7 +62,7 @@ object ClientApp {
             url,
             method = Method.POST,
             headers =
-              Headers("Content-type" -> "application/json; charset=UTF-8"),
+              Headers("Content-type", "application/json; charset=UTF-8"),
             content = Body.fromString("""{
                |"title": "Hello",
                |"body": "World",

@@ -1,6 +1,6 @@
 package com.felstar.restfulzio.delay
 
-import zhttp.http._
+import zio.http._
 import zio.Cause.Fail
 import zio.Console.printLine
 import zio.{Random, Schedule, ZLayer, durationInt}
@@ -13,7 +13,7 @@ object DelayAppSpec extends ZIOSpecDefault {
   def spec = suite("DelayAppSpec")(
     test("should say Hello from delay, slept for 3 seconds") {
       val path = !! / "delay"
-      val req = Request(url = URL(path))
+      val req = Request.get(url = URL(path))
 
       for {
         expectedBodyFiber <- app(req).flatMap(_.body.asString).fork
@@ -23,7 +23,7 @@ object DelayAppSpec extends ZIOSpecDefault {
     },
     test("should say Hello from delay, slept for 2 seconds") {
       val path = !! / "delay" / "2"
-      val req = Request(url = URL(path))
+      val req = Request.get(url = URL(path))
 
       for {
         expectedBodyFiber <- app(req).flatMap(_.body.asString).fork
@@ -33,7 +33,7 @@ object DelayAppSpec extends ZIOSpecDefault {
     },
     test("should fail") {
       val path = !! / "bang"
-      val req = Request(url = URL(path))
+      val req = Request.get(url = URL(path))
 
       for {
         expectedBodyFiber <- app(req).flatMap(_.body.asString).fork
@@ -43,7 +43,7 @@ object DelayAppSpec extends ZIOSpecDefault {
     },
     test("should not fail, due to TestAspect.retry") {
       val path = !! / "bangrandomly"
-      val req = Request(url = URL(path))
+      val req = Request.get(url = URL(path))
 
       for {
         expectedBodyFiber <- app(req).flatMap(_.body.asString).fork

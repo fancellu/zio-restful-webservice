@@ -1,8 +1,9 @@
 package com.felstar.restfulzio.delay
 
-import zhttp.http._
 import zio.Console._
 import zio.{IO, Random, Task, UIO, ZIO, durationInt}
+import zio.http._
+import zio.http.model.Method
 
 
 /**

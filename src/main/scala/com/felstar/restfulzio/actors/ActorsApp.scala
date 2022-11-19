@@ -1,11 +1,12 @@
 package com.felstar.restfulzio.actors
 
-import zhttp.http.{Http, Method, Request, Response}
+
 import zio.actors.Actor.Stateful
 import zio.actors._
 import zio.{UIO, ZIO, ZLayer, durationInt}
-import zhttp.http._
+import zio.http._
 import zio.config.PropertyType.ZioDurationType
+import zio.http.model.Method
 
 object ActorsApp {
 
