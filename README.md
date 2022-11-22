@@ -1,6 +1,6 @@
 # ZIO Restful webservice example
 
-Using zio 2.0, zio-http, zio-json, quill, H2, twirl, zio-logging, zio-cache, zio-actors
+Using zio 2.0, zio-http, zio-json, quill, H2, twirl, zio-logging, zio-cache, zio-actors, zio-spark
 
 Now targeting zio-http 0.0.3
 
@@ -82,6 +82,14 @@ Now targeting zio-http 0.0.3
 - http://localhost:8080/catchAll
 - http://localhost:8080/randomString
 
+### SparkApp
+(Some Spark examples with zio-spark)
+
+(You can disable by setting enableSpark=false)
+- http://localhost:8080/spark
+- http://localhost:8080/spark/person/Peter
+- http://localhost:8080/spark/job
+- http://localhost:8080/spark/wordcount
 
 ## To run
 
