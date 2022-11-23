@@ -19,6 +19,7 @@ libraryDependencies ++= Seq(
 libraryDependencies ++= Seq(
   "dev.zio"         %% "zio-test"       % "2.0.3",
   "dev.zio"         %% "zio-test-sbt"   % "2.0.3",
+  "dev.zio"         %% "zio-http-testkit" % "0.0.3"
 ).map(_%Test)
 
 scalacOptions ++= Seq(

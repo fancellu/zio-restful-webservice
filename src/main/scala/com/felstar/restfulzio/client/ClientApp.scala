@@ -32,7 +32,7 @@ object ClientApp {
     val url = s"$HOST/users/$key"
     for {
       res <- Client.request(url)
-      _ <- ZIO.logInfo(s"Called $url")
+      _ <- ZIO.logInfo(s"Called $url for cache")
       string <- res.body.asString
       response = Response.json(string).setStatus(res.status)
     } yield response
@@ -90,6 +90,7 @@ object ClientApp {
       case Method.GET -> !! / "client" / "posts" / int(id) =>
         val url = s"$HOST/posts/$id"
         for {
+          _ <- ZIO.logInfo(s"about to call client for $url")
           res    <- Client.request(url)
           _      <- ZIO.logInfo(s"Called $url")
           string <- res.body.asString
