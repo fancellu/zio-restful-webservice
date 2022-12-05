@@ -1,6 +1,6 @@
 # ZIO Restful webservice example
 
-Using zio 2.0, zio-http, zio-json, quill, H2, twirl, zio-logging, zio-cache, zio-actors, zio-spark
+Using zio 2.0, zio-http, zio-json, quill, H2, twirl, zio-logging, zio-cache, zio-actors, zio-spark, openai
 
 Now targeting zio-http 0.0.3
 
@@ -90,6 +90,13 @@ Now targeting zio-http 0.0.3
 - http://localhost:8080/spark/person/Peter
 - http://localhost:8080/spark/job
 - http://localhost:8080/spark/wordcount
+
+## OpenAICompletionApp
+(Modelled after https://github.com/openai/openai-quickstart-python.git)
+
+To use it you'll have to fill in your OpenAI `OPENAI_API_KEY`
+
+- http://localhost:8080/openai/superhero/Dog
 
 ## To run
 
