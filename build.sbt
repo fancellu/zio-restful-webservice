@@ -13,7 +13,8 @@ libraryDependencies ++= Seq(
   "dev.zio"         %% "zio-actors"     % "0.1.0",
   "io.univalence"   %% "zio-spark"      % "0.8.1",
   "org.apache.spark" %% "spark-core"    % "3.3.0",
-  "org.apache.spark" %% "spark-sql"     % "3.3.0"
+  "org.apache.spark" %% "spark-sql"     % "3.3.0",
+  "com.github.jwt-scala" %% "jwt-core"  % "9.1.1"
 )
 
 libraryDependencies ++= Seq(

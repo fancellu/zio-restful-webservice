@@ -91,12 +91,20 @@ Now targeting zio-http 0.0.3
 - http://localhost:8080/spark/job
 - http://localhost:8080/spark/wordcount
 
-## OpenAICompletionApp
+### OpenAICompletionApp
 (Modelled after https://github.com/openai/openai-quickstart-python.git)
 
 To use it you'll have to fill in your OpenAI `OPENAI_API_KEY`
 
 - http://localhost:8080/openai/superhero/Dog
+
+### CookieAuthApp
+
+- http://localhost:8080/login/dino/onid
+- http://localhost:8080/login/dino/badpassword
+- http://localhost:8080/auth/dino/greet
+- http://localhost:8080/auth/wrongname/greet
+
 
 ## To run
 

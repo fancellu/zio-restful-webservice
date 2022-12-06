@@ -1,6 +1,7 @@
 package com.felstar.restfulzio
 
 import com.felstar.restfulzio.actors.ActorsApp
+import com.felstar.restfulzio.auth.CookieAuthApp
 import com.felstar.restfulzio.client.ClientApp
 import com.felstar.restfulzio.counter.CounterApp
 import com.felstar.restfulzio.delay.DelayApp
@@ -65,7 +66,7 @@ object MainApp extends ZIOAppDefault {
     _ <- ZIO.logInfo(args.toString).provide(logger)
     serverFibre <- Server.serve((NoEnvApp()  @@ requestMiddleWare ++ HelloWorldApp() ++ DownloadApp() ++
       CounterApp() ++ VideoApp() ++ ActorsApp() ++ HelloTwirlApp() ++ (if (enableSpark) SparkApp() else Http.empty)  ++
-      DelayApp() ++ StreamApp() ++ ClientApp() ++ OpenAICompletionApp() ++ StaticApp()) @@ middlewares)
+      DelayApp() ++ StreamApp() ++ ClientApp() ++ OpenAICompletionApp() ++ CookieAuthApp() ++ StaticApp()) @@ middlewares)
       .provide(
         Server.default,
         Scope.default,
