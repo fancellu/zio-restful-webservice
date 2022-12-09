@@ -2,7 +2,7 @@ package com.felstar.restfulzio.helloworld
 
 import zio.test._
 import zio.http._
-import zio.{Chunk, ZLayer}
+import zio.{Chunk, ZEnvironment, ZLayer}
 import zio.test.Assertion.equalTo
 
 object HelloWorldAppSpec extends ZIOSpecDefault {
@@ -36,5 +36,10 @@ object HelloWorldAppSpec extends ZIOSpecDefault {
       } yield assertTrue(expectedBody == "Hello Dino and Milo!")
     }
 
-  ).provide(ZLayer.succeed("myroot"))
+  ).provide(ZLayer.succeedEnvironment(ZEnvironment(
+    Map(
+      "helloworld" -> "myroot",
+      "ignore" -> "ignored"
+    )
+  )))
 }

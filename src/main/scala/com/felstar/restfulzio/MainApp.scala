@@ -74,7 +74,12 @@ object MainApp extends ZIOAppDefault {
         // For `CounterApp`
         ZLayer.fromZIO(Ref.make(0)),
         // For `HelloWorldApp`
-        ZLayer.succeed("hello"),
+        ZLayer.succeedEnvironment(ZEnvironment(
+          Map(
+            "helloworld" -> "hello",
+            "ignore" -> "ignored"
+          )
+        )),
         // To use the H2 DB layer, provide the `PersistentVideoRepo.layer` layer instead
         InmemoryVideoRepo.layer,
         // PersistentVideoRepo.layer
