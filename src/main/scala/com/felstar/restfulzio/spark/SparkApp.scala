@@ -78,23 +78,24 @@ object SparkApp {
   def apply(): Http[SparkSession, Throwable, Request, Response] =
     Http.fromZIO(ZIO.service[SparkSession]).flatMap { ss =>
       val ssLayer = ZLayer.succeed(ss)
+      val SPARKROOT = !! / "spark"
       Http.collectZIO[Request] {
-        case Method.GET -> !! / "spark" =>
+        case Method.GET -> SPARKROOT =>
           for {
             st <- allZIO.provide(ssLayer)
             _  <- ZIO.logInfo(st)
           } yield Response.text(st)
-        case Method.GET -> !! / "spark" / "wordcount" =>
+        case Method.GET -> SPARKROOT / "wordcount" =>
           for {
             mostUsedWords <- wordCountZIO.provide(ssLayer)
             _             <- ZIO.logInfo(mostUsedWords.toString)
           } yield Response.text(mostUsedWords.mkString("\n"))
-        case Method.GET -> !! / "spark" / "person" / name =>
+        case Method.GET -> SPARKROOT / "person" / name =>
           for {
             st <- byNameZIO.provide(ssLayer, ZLayer.succeed(name))
             _  <- ZIO.logInfo(st)
           } yield Response.text(st)
-        case Method.GET -> !! / "spark" / "job" =>
+        case Method.GET -> SPARKROOT / "job" =>
           for {
             st <- jobZIO.provide(ssLayer)
             _  <- ZIO.logInfo(st)
