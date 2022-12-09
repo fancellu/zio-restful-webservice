@@ -2,10 +2,13 @@ package com.felstar.restfulzio.openai
 
 import zio.json._
 
-import zio.{ZIO}
+import zio.ZIO
 import zio.http._
 import zio.http.model.{Header, Headers, Method}
 import zio._
+
+import com.felstar.openai.completion._
+import SerDes._
 
 // Modelled after the quickstart openai completion app https://github.com/openai/openai-quickstart-python.git
 
@@ -40,7 +43,7 @@ object OpenAICompletionApp {
         val json = for {
           open_api_key_property <- System.property("OPENAI_API_KEY")
           open_api_key_env <- System.env("OPENAI_API_KEY")
-          open_api_key = open_api_key_property.getOrElse(open_api_key_env, "ENTER_OPENAI_API_KEY")
+          open_api_key = open_api_key_property.orElse(open_api_key_env).getOrElse("ENTER_OPENAI_API_KEY")
           res <- Client.request(
             url,
             method = Method.POST,

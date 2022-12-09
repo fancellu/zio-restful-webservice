@@ -1,6 +1,8 @@
-scalaVersion := "2.13.8"
+scalaVersion := "2.13.10"
 organization := "com.felstar"
 name         := "zio-restful-webservice"
+
+resolvers += "jitpack" at "https://jitpack.io"
 
 libraryDependencies ++= Seq(
   "dev.zio"         %% "zio"            % "2.0.3",
@@ -14,7 +16,8 @@ libraryDependencies ++= Seq(
   "io.univalence"   %% "zio-spark"      % "0.8.1",
   "org.apache.spark" %% "spark-core"    % "3.3.0",
   "org.apache.spark" %% "spark-sql"     % "3.3.0",
-  "com.github.jwt-scala" %% "jwt-core"  % "9.1.1"
+  "com.github.jwt-scala" %% "jwt-core"  % "9.1.1",
+  "com.github.fancellu" % "openai-scala-models" % "v1.1.0.beta1"
 )
 
 libraryDependencies ++= Seq(
