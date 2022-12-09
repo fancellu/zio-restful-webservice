@@ -15,7 +15,7 @@ Now targeting zio-http 0.0.3
   - http://localhost:8080/simplepostcodec (The same but using MiddlewareCodec magic)
 
 ### HelloWorldApp
-(Takes a String as app root name)
+(Takes a String param via serviceAt Map as app root name)
   - http://localhost:8080/hello
   - http://localhost:8080/hello/Dino
   - http://localhost:8080/hello?name=Dino&name=Milo
