@@ -97,6 +97,7 @@ Now targeting zio-http 0.0.3
 To use it you'll have to fill in your OpenAI `OPENAI_API_KEY`
 
 - http://localhost:8080/openai/superhero/Dog
+- http://localhost:8080/openai/prompt/translate+I+like+kittens+to+French
 
 ### CookieAuthApp
 
