@@ -10,7 +10,7 @@ import com.felstar.restfulzio.helloworld.HelloWorldApp
 import com.felstar.restfulzio.noenv.NoEnvApp
 import com.felstar.restfulzio.staticserver.StaticApp
 import com.felstar.restfulzio.hellotwirl.HelloTwirlApp
-import com.felstar.restfulzio.openai.OpenAICompletionApp
+import com.felstar.restfulzio.openai.{OpenAICompletionApp, OpenAIDallEApp}
 import com.felstar.restfulzio.spark.SparkApp
 import com.felstar.restfulzio.stream.StreamApp
 import com.felstar.restfulzio.videos.{InmemoryVideoRepo, PersistentVideoRepo, VideoApp}
@@ -66,7 +66,7 @@ object MainApp extends ZIOAppDefault {
     _ <- ZIO.logInfo(args.toString).provide(logger)
     serverFibre <- Server.serve((NoEnvApp()  @@ requestMiddleWare ++ HelloWorldApp() ++ DownloadApp() ++
       CounterApp() ++ VideoApp() ++ ActorsApp() ++ HelloTwirlApp() ++ (if (enableSpark) SparkApp() else Http.empty)  ++
-      DelayApp() ++ StreamApp() ++ ClientApp() ++ OpenAICompletionApp() ++ CookieAuthApp() ++ StaticApp()) @@ middlewares)
+      DelayApp() ++ StreamApp() ++ ClientApp() ++ OpenAICompletionApp() ++ OpenAIDallEApp() ++ CookieAuthApp() ++ StaticApp()) @@ middlewares)
       .provide(
         Server.default,
         Scope.default,
