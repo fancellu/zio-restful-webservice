@@ -103,6 +103,11 @@ To use it you'll have to fill in your OpenAI `OPENAI_API_KEY`
 
 - http://localhost:8080/openai/dalle/a+ginger+cat,+wearing+round+black+glasses,+riding+a+bike+and+smoking+a+pipe,+photorealistic
 
+### OpenAIModerationApp
+
+- http://localhost:8080/openai/moderation/we+must+kill+all+the+elves
+- http://localhost:8080/openai/moderation/we+must+kiss+all+the+elves
+
 ### CookieAuthApp
 
 - http://localhost:8080/login/dino/onid
