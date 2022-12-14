@@ -115,6 +115,9 @@ To use it you'll have to fill in your OpenAI `OPENAI_API_KEY`
 - http://localhost:8080/auth/dino/greet
 - http://localhost:8080/auth/wrongname/greet
 
+### FormApp
+
+- http://localhost:8080/form.html
 
 ## To run
 
