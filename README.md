@@ -33,6 +33,7 @@ Now targeting zio-http 0.0.3
 ### CounterApp
 (Stateful use of Ref)
   - http://localhost:8080/up
+  - http://localhost:8080/up/ (You can put slashes at the end of each endpoint here)
   - http://localhost:8080/down
   - http://localhost:8080/get
   - http://localhost:8080/reset 

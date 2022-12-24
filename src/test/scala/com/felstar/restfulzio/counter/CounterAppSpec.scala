@@ -17,6 +17,14 @@ object CounterAppSpec extends ZIOSpecDefault {
         expectedBody <- app(req).flatMap(_.body.asString)
       } yield assertTrue(expectedBody == "101")
     },
+    test("up/ should work") {
+      val path = (!! / "up").addTrailingSlash
+      val req = Request.get(url = URL(path))
+
+      for {
+        expectedBody <- app(req).flatMap(_.body.asString)
+      } yield assertTrue(expectedBody == "101")
+    },
     test("up plus down should work") {
       for {
         _ <- app(Request.get(url = URL(!! / "up"))).repeatN(2) // 3 ups in total
