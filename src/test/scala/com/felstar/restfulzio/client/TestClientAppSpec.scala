@@ -41,7 +41,6 @@ object TestClientAppSpec extends ZIOSpecDefault {
        } yield assertTrue(expectedBody.contains("repellat"))
     }
   ).provide(
-    MainApp.logger,
     TestClient.layer,
     ZLayer.fromZIO(userCache)
   )

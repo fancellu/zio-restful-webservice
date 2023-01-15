@@ -46,7 +46,7 @@ object MainApp extends ZIOAppDefault {
 
   val middlewares = errorMiddleware // ++ Middleware.dropTrailingSlash
 
-  val logger =
+  override val bootstrap =
     Runtime.removeDefaultLoggers >>> console(LogFormat.colored)
 
   val requestMiddleWare=Middleware.identity[Request, Response].contramap[Request](_.addHeader("Seen", DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(LocalDateTime.now())))
@@ -62,9 +62,9 @@ object MainApp extends ZIOAppDefault {
   lazy val sparkSession: ZLayer[Any, Throwable, SparkSession] =SparkSession.builder.master(localAllNodes).appName("app").asLayer
 
   override val run = for {
-    _ <- ZIO.logInfo("Starting up").provide(logger)
+    _ <- ZIO.logInfo("Starting up")
     args <- getArgs // to get command line params
-    _ <- ZIO.logInfo(args.toString).provide(logger)
+    _ <- ZIO.logInfo(args.toString)
     serverFibre <- Server.serve((NoEnvApp()  @@ requestMiddleWare ++ HelloWorldApp() ++ DownloadApp() ++
       CounterApp() ++ VideoApp() ++ ActorsApp() ++ HelloTwirlApp() ++ (if (enableSpark) SparkApp() else Http.empty)  ++
       DelayApp() ++ StreamApp() ++ ClientApp() ++ OpenAICompletionApp() ++ OpenAIDallEApp() ++ OpenAIModerationApp()
@@ -85,7 +85,6 @@ object MainApp extends ZIOAppDefault {
         // To use the H2 DB layer, provide the `PersistentVideoRepo.layer` layer instead
         InmemoryVideoRepo.layer,
         // PersistentVideoRepo.layer
-        logger,
         ZLayer.fromZIO(userCache),
         if (enableSpark) sparkSession else ZLayer.die(new Throwable("bang"))
       )
