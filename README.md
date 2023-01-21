@@ -120,6 +120,11 @@ To use it you'll have to fill in your OpenAI `OPENAI_API_KEY`
 
 - http://localhost:8080/form.html
 
+### Parallel server on port 8082
+
+- http://localhost:8082/hello => world
+- http://localhost:8082/world => hello
+
 ## To run
 
 ```scala

@@ -20,7 +20,7 @@ import zio._
 import zio.cache.{Cache, Lookup}
 import zio.http.{Http, Middleware, Request, Response, Server}
 import zio.http.middleware.HttpMiddleware
-import zio.http.model.Status
+import zio.http.model.{Method, Status}
 import zio.logging.{LogFormat, console}
 import zio.spark.parameter.localAllNodes
 import zio.spark.sql.SparkSession
@@ -61,6 +61,11 @@ object MainApp extends ZIOAppDefault {
 
   lazy val sparkSession: ZLayer[Any, Throwable, SparkSession] =SparkSession.builder.master(localAllNodes).appName("app").asLayer
 
+  val config2 = ServerConfig.default
+    .port(8082)
+
+  val config2Layer = ServerConfig.live(config2)
+
   override val run = for {
     _ <- ZIO.logInfo("Starting up")
     args <- getArgs // to get command line params
@@ -89,8 +94,18 @@ object MainApp extends ZIOAppDefault {
         if (enableSpark) sparkSession else ZLayer.die(new Throwable("bang"))
       )
       .fork
+    serverFibre2 <- Server.serve((Http.collect[Request] {
+      case Method.GET -> !! / "hello" => Response.text("world")
+      case Method.GET -> !! / "world" => Response.text("hello")
+    }) @@ middlewares)
+      .provide(
+        config2Layer,
+        Server.live
+      )
+      .fork
     _ <- Console.readLine("Press enter to stop the server\n")
     _ <- Console.printLine("Interrupting server")
     _ <- serverFibre.interrupt
+    _ <- serverFibre2.interrupt
   } yield ()
 }
