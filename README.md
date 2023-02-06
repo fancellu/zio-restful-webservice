@@ -67,6 +67,9 @@ Now targeting zio-http 0.0.3
 - http://localhost:8080/client/posts/1
 - http://localhost:8080/client/posts/userId/1 
 - http://localhost:8080/client/dopost
+- 
+Downloads anime from ```https://api.waifu.pics/many/sfw/waifu``` into resources/waifu dir
+- http://localhost:8080/client/girls 
 
 ### StaticApp
 (Static file server from static dir)

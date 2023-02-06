@@ -16,7 +16,7 @@ libraryDependencies ++= Seq(
   "io.univalence"   %% "zio-spark"      % "0.9.0",
   "org.apache.spark" %% "spark-core"    % "3.3.0",
   "org.apache.spark" %% "spark-sql"     % "3.3.0",
-  "com.github.jwt-scala" %% "jwt-core"  % "9.1.1",
+  "com.github.jwt-scala" %% "jwt-core"  % "9.1.2",
   "com.github.fancellu" % "openai-scala-models" % "v1.1.0.beta3"
 )
 

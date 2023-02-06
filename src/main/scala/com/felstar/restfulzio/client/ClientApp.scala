@@ -8,6 +8,8 @@ import zio.{URIO, ZIO, durationInt}
 import zio.http._
 import zio.http.model.{Header, Headers, Method}
 
+import java.io.{BufferedOutputStream, FileOutputStream}
+
 case class Post(userId: Int, id: Int, title: String, body: String)
 
 object Post {
@@ -15,6 +17,19 @@ object Post {
     DeriveJsonEncoder.gen[Post]
   implicit val decoder: JsonDecoder[Post] =
     DeriveJsonDecoder.gen[Post]
+}
+
+case class AnimeRequest(exclude: String)
+
+object AnimeRequest {
+  implicit val encoder: JsonEncoder[AnimeRequest] = DeriveJsonEncoder.gen[AnimeRequest]
+}
+
+case class AnimeResponse(files: Array[String])
+
+object AnimeResponse {
+  implicit val decoder: JsonDecoder[AnimeResponse] = DeriveJsonDecoder.gen[AnimeResponse]
+  implicit val encoder: JsonEncoder[AnimeResponse] = DeriveJsonEncoder.gen[AnimeResponse]
 }
 
 /** An http app that:
@@ -37,6 +52,28 @@ object ClientApp {
       response = Response.json(string).setStatus(res.status)
     } yield response
   }
+
+  val waifuUrl = "https://api.waifu.pics/many/sfw/waifu"
+
+  def getGirls: ZIO[Client, Throwable, Option[AnimeResponse]] = for {
+    resp <- Client.request(url = waifuUrl, method = Method.POST,
+      headers = Headers("Content-type", "application/x-www-form-urlencoded"),
+      content = Body.fromString(AnimeRequest("").toJson))
+    result <- resp.body.asString
+  } yield result.fromJson[AnimeResponse].toOption
+
+  // Quick and dirty, less than ideal
+  def downloadGirl(girlUrl: String) = for {
+    _ <- ZIO.succeed(println(girlUrl))
+    resp <- Client.request(girlUrl)
+    data <- resp.body.asArray
+    _ <- ZIO.succeed {
+      val filename = girlUrl.split("/").last
+      println(s"Download $filename")
+      val target = new BufferedOutputStream(new FileOutputStream(s"src/main/resources/waifu/${filename}"))
+      try data.foreach(target.write(_)) finally target.close()
+    }
+  } yield ()
 
   def apply(): Http[
     Client with Cache[Int, Throwable, Response],
@@ -107,7 +144,13 @@ object ClientApp {
           json  = posts.toJsonPretty
         } yield json
         json.map(Response.json(_))
-
+      case Method.GET -> !! / "client" / "girls"=>
+        val json = for {
+          files <- getGirls.map(_.map(_.files).getOrElse(Array.empty))
+          _ <- ZIO.logInfo(files.mkString(","))
+          _ <- ZIO.foreach(files)(downloadGirl)
+        } yield s"Girls are downloaded: ${files.length}"
+        json.map(Response.json(_))
     }
 
 }
