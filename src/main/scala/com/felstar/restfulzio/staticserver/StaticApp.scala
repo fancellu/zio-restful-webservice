@@ -43,7 +43,7 @@ object StaticApp {
     Http.collectHttp[Request] {
         // One way to get it to serve from something other than the root
         // I check the top of the path to see if it is "staticroot" and if so carry on and drop it via drop(1)
-      case Method.GET -> "" /: path if (path.segments.head.text=="staticroot") =>
+      case Method.GET -> "" /: path if path.segments.headOption.exists(_.text=="staticroot") =>
         Http.fromZIO(printLine(s"StaticApp called on $path")) *> pathToHttp(path.drop(1))
     }
 
