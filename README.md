@@ -73,11 +73,11 @@ Downloads anime from ```https://api.waifu.pics/many/sfw/waifu``` into resources/
 
 ### StaticApp
 (Static file server from static dir)
-- http://localhost:8080
-- http://localhost:8080/subdir
-- http://localhost:8080/subdir/test3.txt 
-- http://localhost:8080/test.txt
-- http://localhost:8080/test2.txt
+- http://localhost:8080/staticroot
+- http://localhost:8080/staticroot/subdir
+- http://localhost:8080/staticroot/subdir/test3.txt 
+- http://localhost:8080/staticroot/test.txt
+- http://localhost:8080/staticroot/test2.txt
 
 ### ActorsApp
 - http://localhost:8080/actors
@@ -121,7 +121,7 @@ To use it you'll have to fill in your OpenAI `OPENAI_API_KEY`
 
 ### FormApp
 
-- http://localhost:8080/form.html
+- http://localhost:8080/staticroot/form.html
 
 ### Parallel server on port 8082
 
