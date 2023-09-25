@@ -86,14 +86,20 @@ Downloads anime from ```https://api.waifu.pics/many/sfw/waifu``` into resources/
 - http://localhost:8080/catchAll
 - http://localhost:8080/randomString
 
-### SparkApp
-(Some Spark examples with zio-spark)
+[//]: # (### SparkApp)
 
-(You can disable by setting enableSpark=false)
-- http://localhost:8080/spark
-- http://localhost:8080/spark/person/Peter
-- http://localhost:8080/spark/job
-- http://localhost:8080/spark/wordcount
+[//]: # (&#40;Some Spark examples with zio-spark&#41;)
+
+[//]: # ()
+[//]: # (&#40;You can disable by setting enableSpark=false&#41;)
+
+[//]: # (- http://localhost:8080/spark)
+
+[//]: # (- http://localhost:8080/spark/person/Peter)
+
+[//]: # (- http://localhost:8080/spark/job)
+
+[//]: # (- http://localhost:8080/spark/wordcount)
 
 ### OpenAICompletionApp
 (Modelled after https://github.com/openai/openai-quickstart-python.git)

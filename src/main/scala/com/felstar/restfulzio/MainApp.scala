@@ -57,7 +57,7 @@ object MainApp extends ZIOAppDefault {
     lookup = Lookup(ClientApp.getUser)
   )
 
-  val enableSpark=true
+  val enableSpark=false
 
   lazy val sparkSession: ZLayer[Any, Throwable, SparkSession] =SparkSession.builder.master(localAllNodes).appName("app").asLayer
 
@@ -71,7 +71,7 @@ object MainApp extends ZIOAppDefault {
     args <- getArgs // to get command line params
     _ <- ZIO.logInfo(args.toString)
     serverFibre <- Server.serve((NoEnvApp()  @@ requestMiddleWare ++ HelloWorldApp() ++ DownloadApp() ++
-      CounterApp() ++ VideoApp() ++ ActorsApp() ++ HelloTwirlApp() ++ (if (enableSpark) SparkApp() else Http.empty)  ++
+      CounterApp() ++ VideoApp() ++ ActorsApp() ++ HelloTwirlApp() ++ // (if (enableSpark) SparkApp() else Http.empty)  ++
       DelayApp() ++ StreamApp() ++ ClientApp() ++ OpenAICompletionApp() ++ OpenAIDallEApp() ++ OpenAIModerationApp()
       ++ CookieAuthApp() ++ FormApp() ++ StaticApp()) @@ middlewares)
       .provide(
@@ -91,7 +91,7 @@ object MainApp extends ZIOAppDefault {
         InmemoryVideoRepo.layer,
         // PersistentVideoRepo.layer
         ZLayer.fromZIO(userCache),
-        if (enableSpark) sparkSession else ZLayer.die(new Throwable("bang"))
+//        if (enableSpark) sparkSession else ZLayer.die(new Throwable("bang"))
       )
       .fork
     serverFibre2 <- Server.serve((Http.collect[Request] {
