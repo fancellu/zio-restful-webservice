@@ -37,7 +37,7 @@ object VideoApp {
             case None =>
               Response.status(Status.NotFound)
           }
-      // GET /users
+      // GET /videos
       case Method.GET -> !! / "videos" =>
         VideoRepo.videos.map(response => Response.json(response.toJson))
     }

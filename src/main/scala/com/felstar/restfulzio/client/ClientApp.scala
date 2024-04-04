@@ -1,14 +1,14 @@
 package com.felstar.restfulzio.client
 
-import zio.Console.printLine
-import zio.Duration._
-import zio.json.{DecoderOps, DeriveJsonDecoder, DeriveJsonEncoder, EncoderOps, JsonDecoder, JsonEncoder}
-import zio.cache.{Cache, Lookup}
-import zio.{URIO, ZIO, durationInt}
+import zio.ZIO
+import zio.cache.Cache
 import zio.http._
-import zio.http.model.{Header, Headers, Method}
+import zio.http.model.{Headers, Method}
+import zio.json.{DecoderOps, DeriveJsonDecoder, DeriveJsonEncoder, EncoderOps, JsonDecoder, JsonEncoder}
 
 import java.io.{BufferedOutputStream, FileOutputStream}
+import java.nio.file.{Files, Paths}
+import scala.util.Try
 
 case class Post(userId: Int, id: Int, title: String, body: String)
 
@@ -67,11 +67,13 @@ object ClientApp {
     _ <- ZIO.succeed(println(girlUrl))
     resp <- Client.request(girlUrl)
     data <- resp.body.asArray
-    _ <- ZIO.succeed {
-      val filename = girlUrl.split("/").last
-      println(s"Download $filename")
-      val target = new BufferedOutputStream(new FileOutputStream(s"src/main/resources/waifu/${filename}"))
-      try data.foreach(target.write(_)) finally target.close()
+    _ <- ZIO.fromTry {
+      Try {
+        val filename = girlUrl.split("/").last
+        println(s"Download $filename")
+        val target = new BufferedOutputStream(new FileOutputStream(s"src/main/resources/waifu/${filename}"))
+        try data.foreach(target.write(_)) finally target.close()
+      }
     }
   } yield ()
 
@@ -145,12 +147,13 @@ object ClientApp {
         } yield json
         json.map(Response.json(_))
       case Method.GET -> !! / "client" / "girls"=>
+        Files.createDirectories(Paths.get(s"src/main/resources/waifu/"))
         val json = for {
           files <- getGirls.map(_.map(_.files).getOrElse(Array.empty))
           _ <- ZIO.logInfo(files.mkString(","))
-          _ <- ZIO.foreach(files)(downloadGirl)
+          _ <- ZIO.foreachPar(files)(downloadGirl)
         } yield s"Girls are downloaded: ${files.length}"
-        json.map(Response.json(_))
+        json.logError *> json.map(Response.json(_))
     }
 
 }
