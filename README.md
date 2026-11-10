@@ -1,5 +1,8 @@
 # ZIO Restful webservice example
 
+A collection of small, independent example apps (one per package under `src/main/scala/com/felstar/restfulzio`),
+all composed together and served by `MainApp` on http://localhost:8080, plus a second server on port 8082.
+
 Using zio 2.0, zio-http, zio-json, quill, H2, twirl, zio-logging, zio-cache, zio-actors, zio-spark, openai
 
 Now targeting zio-http 0.0.3
@@ -49,8 +52,8 @@ Now targeting zio-http 0.0.3
 (Semantically sleeps for a while, no thread blocking, useful for emulating slow queries)
 - http://localhost:8080/delay
 - http://localhost:8080/delay/2
-- http://localhost:8080/bang
-- http://localhost:8080/bangrandomly
+- http://localhost:8080/bang (always fails with a 500)
+- http://localhost:8080/bangrandomly (fails with a 500 about 9 times out of 10)
 
 ### StreamApp
 (Some streaming examples)
@@ -67,9 +70,9 @@ Now targeting zio-http 0.0.3
 - http://localhost:8080/client/posts/1
 - http://localhost:8080/client/posts/userId/1 
 - http://localhost:8080/client/dopost
-- 
-Downloads anime from ```https://api.waifu.pics/many/sfw/waifu``` into resources/waifu dir
-- http://localhost:8080/client/girls 
+
+Downloads 5 random dog pictures from ```https://dog.ceo/api/breeds/image/random/5``` into `src/main/resources/dogs` (created if missing)
+- http://localhost:8080/client/dogs 
 
 ### StaticApp
 (Static file server from static dir)
@@ -82,9 +85,9 @@ Downloads anime from ```https://api.waifu.pics/many/sfw/waifu``` into resources/
 ### ActorsApp
 - http://localhost:8080/actors
 - http://localhost:8080/actors/[int]
-- http://localhost:8080/nodie
-- http://localhost:8080/catchAll
-- http://localhost:8080/randomString
+- http://localhost:8080/actors/nodie
+- http://localhost:8080/actors/catchAll
+- http://localhost:8080/actors/randomString (deliberately fails with a 500, the exception is logged by the error middleware)
 
 [//]: # (### SparkApp)
 
@@ -134,10 +137,40 @@ To use it you'll have to fill in your OpenAI `OPENAI_API_KEY`
 - http://localhost:8082/hello => world
 - http://localhost:8082/world => hello
 
+## Requirements
+
+- JDK 17 or 21 recommended (it builds and runs on newer JDKs too, but if you re-enable the Spark code you'll need 17 or older, or the appropriate `--add-opens` flags)
+- sbt 1.x (currently 1.13.0, see `project/build.properties`). **Not sbt 2.x**: the sbt-twirl plugin and the Scala 2 compiler plugin used here are sbt 1.x only
+- Scala 2.13.16 (set in `build.sbt`)
+
 ## To run
 
-```scala
+```
 sbt run
 ```
 
-You should find it running on http://localhost:8080/
+You should find it running on http://localhost:8080/ (and http://localhost:8082/hello)
+
+Press enter in the terminal to stop the servers.
+
+## To test
+
+```
+sbt test
+```
+
+Uses zio-test and the zio-http testkit.
+
+## Configuration
+
+- H2 database settings are in `src/main/resources/application.conf`, schema in `h2-schema.sql`
+- `MainApp` uses the in-memory video repo by default. Swap in `PersistentVideoRepo.layer` to use H2 + Quill
+- OpenAI apps read `OPENAI_API_KEY` from a system property or an environment variable
+- Spark is currently disabled (see `enableSpark` in `MainApp`), as enabling it made the 8080 endpoints unreachable
+
+## Troubleshooting
+
+- `bad constant pool index` / `Could not initialize class sbt.internal.parser.SbtParser$`: your sbt is too old for your JDK. Use sbt 1.10+ or an older JDK
+- `sbt-bloop_sbt2_3 ... not found`: Metals has generated sbt 2 plugin files. Use sbt 1.x, and delete the auto-generated `project/project/` and `project/metals.sbt`
+- `Create a new server?` / `ServerAlreadyBootingException`: another sbt instance is still running, stop it first
+- `found version conflict(s)` for `scala-xml`: handled by `libraryDependencySchemes` in `build.sbt`

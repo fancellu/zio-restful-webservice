@@ -1,4 +1,4 @@
-scalaVersion := "2.13.10"
+scalaVersion := "2.13.16"
 organization := "com.felstar"
 name         := "zio-restful-webservice"
 
@@ -37,3 +37,5 @@ testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
 addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1")
 
 lazy val root = (project in file(".")).enablePlugins(SbtTwirl)
+
+ThisBuild / libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always

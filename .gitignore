@@ -7,3 +7,13 @@ out
 *.db
 target
 *.class
+
+# Metals / VS Code / sbt
+.metals/
+.vscode/
+.bloop/
+project/metals.sbt
+project/project/
+null/
+src/main/resources/dogs/
+src/main/resources/waifu/
