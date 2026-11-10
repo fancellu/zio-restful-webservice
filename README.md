@@ -3,13 +3,17 @@
 A collection of small, independent example apps (one per package under `src/main/scala/com/felstar/restfulzio`),
 all composed together and served by `MainApp` on http://localhost:8080, plus a second server on port 8082.
 
-Using zio 2.1, zio-http 3, zio-json, quill, H2, twirl, zio-logging, zio-cache, zio-actors, zio-spark, openai
+Using zio 2.1, zio-http 3, zio-json, quill, H2, twirl, zio-logging, zio-cache, zio-actors, zio-spark, Gemini, openai
 
 Now targeting zio 2.1.27 and zio-http 3.11.6 (the `Routes` / `Handler` API)
 
 ## 🧩 Apps
 
+📚 Full per-endpoint documentation (params, responses, curl examples) is in [docs/](docs/README.md).
+
 ### 🌱 NoEnvApp
+📖 [Docs](docs/noenv.md)
+
 (no use of Environment)
   - http://localhost:8080/noenv
   - http://localhost:8080/headers (shows headers and use of request altering middleware, note "Seen" header)
@@ -18,22 +22,30 @@ Now targeting zio 2.1.27 and zio-http 3.11.6 (the `Routes` / `Handler` API)
   - http://localhost:8080/simplepostcodec (The same, but the route is a plain `SimplePost => String` function, wrapped by a generic json handler. Bad json is a 400)
 
 ### 👋 HelloWorldApp
+📖 [Docs](docs/helloworld.md)
+
 (Takes a String param via serviceAt Map as app root name)
   - http://localhost:8080/hello
   - http://localhost:8080/hello/Dino
   - http://localhost:8080/hello?name=Dino&name=Milo
 
 ### 🌀 HelloWorldTwirlApp
+📖 [Docs](docs/hellotwirl.md)
+
 (Takes a String param and uses Twirl for HTML rendering)
   - http://localhost:8080/hellotwirl
   - http://localhost:8080/hellotwirl/Dino
 
 ### 📥 DownloadApp
+📖 [Docs](docs/download.md)
+
 (Downloads a file in one go, and streaming, slowly)
   - http://localhost:8080/download
   - http://localhost:8080/download/stream
 
 ### 🔢 CounterApp
+📖 [Docs](docs/counter.md)
+
 (Stateful use of Ref)
   - http://localhost:8080/up
   - http://localhost:8080/up/ (You can put slashes at the end of each endpoint here)
@@ -42,6 +54,8 @@ Now targeting zio 2.1.27 and zio-http 3.11.6 (the `Routes` / `Handler` API)
   - http://localhost:8080/reset 
 
 ### 🎬 VideoApp
+📖 [Docs](docs/videos.md)
+
 (In memory and H2+Quill)
   - POST http://localhost:8080/videos/:name
   - http://localhost:8080/videos
@@ -49,6 +63,8 @@ Now targeting zio 2.1.27 and zio-http 3.11.6 (the `Routes` / `Handler` API)
   - http://localhost:8080/videos/:uuid 
 
 ### ⏳ DelayApp
+📖 [Docs](docs/delay.md)
+
 (Semantically sleeps for a while, no thread blocking, useful for emulating slow queries)
 - http://localhost:8080/delay
 - http://localhost:8080/delay/2
@@ -56,6 +72,8 @@ Now targeting zio 2.1.27 and zio-http 3.11.6 (the `Routes` / `Handler` API)
 - http://localhost:8080/bangrandomly 🎲 (fails with a 500 about 9 times out of 10)
 
 ### 🌊 StreamApp
+📖 [Docs](docs/stream.md)
+
 (Some streaming examples)
 - http://localhost:8080/stream/incrementing
 - http://localhost:8080/stream/randomInt
@@ -64,6 +82,8 @@ Now targeting zio 2.1.27 and zio-http 3.11.6 (the `Routes` / `Handler` API)
   - (Make sure you have some videos in DB, perhaps call http://localhost:8080/videos/loadup)
 
 ### 🌐 ClientApp
+📖 [Docs](docs/client.md)
+
 (Client examples talking to external web service https://jsonplaceholder.typicode.com/)
 - http://localhost:8080/client/users
 - http://localhost:8080/client/users/1 (Is Cached, TTL 15 seconds)
@@ -76,6 +96,8 @@ Now targeting zio 2.1.27 and zio-http 3.11.6 (the `Routes` / `Handler` API)
 - http://localhost:8080/client/dogs 
 
 ### 📁 StaticApp
+📖 [Docs](docs/static.md)
+
 (Static file server from static dir)
 - http://localhost:8080
 - http://localhost:8080/subdir
@@ -84,6 +106,8 @@ Now targeting zio 2.1.27 and zio-http 3.11.6 (the `Routes` / `Handler` API)
 - http://localhost:8080/test2.txt
 
 ### 🎭 ActorsApp
+📖 [Docs](docs/actors.md)
+
 - http://localhost:8080/actors
 - http://localhost:8080/actors/[int]
 - http://localhost:8080/actors/nodie
@@ -105,24 +129,34 @@ Now targeting zio 2.1.27 and zio-http 3.11.6 (the `Routes` / `Handler` API)
 
 [//]: # (- http://localhost:8080/spark/wordcount)
 
-### 🤖 OpenAICompletionApp
-(Modelled after https://github.com/openai/openai-quickstart-python.git)
+### ✨ GeminiTextApp
+📖 [Docs](docs/gemini.md)
 
-🔑 To use it you'll have to fill in your OpenAI `OPENAI_API_KEY`
+(Text generation with Google's `gemini-3.8-flash`)
 
-- http://localhost:8080/openai/superhero/Dog
-- http://localhost:8080/openai/prompt/translate+I+like+kittens+to+French
+🔑 To use it you'll have to set your `GEMINI_API_KEY` (free tier available at https://aistudio.google.com/apikey)
 
-### 🎨 OpenAIDallEApp
+- http://localhost:8080/gemini/superhero/Dog
+- http://localhost:8080/gemini/prompt/translate+I+like+kittens+to+French
 
-- http://localhost:8080/openai/dalle/a+ginger+cat,+wearing+round+black+glasses,+riding+a+bike+and+smoking+a+pipe,+photorealistic
+### 🎨 GeminiImageApp
+📖 [Docs](docs/gemini.md)
+
+(Image generation with `gemini-3.1-flash-image`, same `GEMINI_API_KEY`)
+
+- http://localhost:8080/gemini/image/a+ginger+cat,+wearing+round+black+glasses,+riding+a+bike+and+smoking+a+pipe,+photorealistic
 
 ### 🛡️ OpenAIModerationApp
+📖 [Docs](docs/openai.md)
+
+🔑 Needs your OpenAI `OPENAI_API_KEY` (the moderation endpoint is free)
 
 - http://localhost:8080/openai/moderation/we+must+kill+all+the+elves
 - http://localhost:8080/openai/moderation/we+must+kiss+all+the+elves
 
 ### 🍪 CookieAuthApp
+📖 [Docs](docs/auth.md)
+
 
 - http://localhost:8080/login/dino/onid
 - http://localhost:8080/login/dino/badpassword
@@ -130,10 +164,14 @@ Now targeting zio 2.1.27 and zio-http 3.11.6 (the `Routes` / `Handler` API)
 - http://localhost:8080/auth/wrongname/greet
 
 ### 📝 FormApp
+📖 [Docs](docs/form.md)
+
 
 - http://localhost:8080/form.html
 
 ### 🔀 Parallel server on port 8082
+📖 [Docs](docs/server-8082.md)
+
 
 - http://localhost:8082/hello => world
 - http://localhost:8082/world => hello
@@ -166,7 +204,7 @@ Uses zio-test and the zio-http testkit.
 
 - H2 database settings are in `src/main/resources/application.conf`, schema in `h2-schema.sql`
 - `MainApp` uses the in-memory video repo by default. Swap in `PersistentVideoRepo.layer` to use H2 + Quill
-- OpenAI apps read `OPENAI_API_KEY` from a system property or an environment variable
+- The Gemini apps read `GEMINI_API_KEY`, and the OpenAI moderation app reads `OPENAI_API_KEY`, from a system property or an environment variable
 - Spark is currently disabled (see `enableSpark` in `MainApp`), as enabling it made the 8080 endpoints unreachable
 
 ## 🩺 Troubleshooting

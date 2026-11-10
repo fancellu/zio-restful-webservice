@@ -11,7 +11,8 @@ import com.felstar.restfulzio.helloworld.HelloWorldApp
 import com.felstar.restfulzio.noenv.NoEnvApp
 import com.felstar.restfulzio.staticserver.StaticApp
 import com.felstar.restfulzio.hellotwirl.HelloTwirlApp
-import com.felstar.restfulzio.openai.{OpenAICompletionApp, OpenAIDallEApp, OpenAIModerationApp}
+import com.felstar.restfulzio.gemini.{GeminiImageApp, GeminiTextApp}
+import com.felstar.restfulzio.openai.OpenAIModerationApp
 import com.felstar.restfulzio.stream.StreamApp
 import com.felstar.restfulzio.videos.InmemoryVideoRepo
 import com.felstar.restfulzio.videos.VideoApp
@@ -65,7 +66,7 @@ object MainApp extends ZIOAppDefault {
     helloWorldRoutes <- HelloWorldApp().provide(helloWorldConfig)
     routes = handleErrors(NoEnvApp() @@ requestMiddleWare ++ helloWorldRoutes ++ DownloadApp() ++
       CounterApp() ++ VideoApp() ++ ActorsApp() ++ HelloTwirlApp() ++ // (if (enableSpark) SparkApp() else Routes.empty)  ++
-      DelayApp() ++ StreamApp() ++ ClientApp() ++ OpenAICompletionApp() ++ OpenAIDallEApp() ++ OpenAIModerationApp()
+      DelayApp() ++ StreamApp() ++ ClientApp() ++ GeminiTextApp() ++ GeminiImageApp() ++ OpenAIModerationApp()
       ++ CookieAuthApp() ++ FormApp() ++ StaticApp())
     server1 = Server.serve(routes)
       .provide(
