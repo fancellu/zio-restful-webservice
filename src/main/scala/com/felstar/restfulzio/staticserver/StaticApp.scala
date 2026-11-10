@@ -13,11 +13,16 @@ object StaticApp {
 
   def encodeForBrowser(path: Path): String = if (path.isEmpty) "/" else s"/$path"
 
+  private val staticRoot = new File("static").getCanonicalFile
+
   def pathToHttp(path: Path)={
-    val myfile = new File("static", path.encode)
+    // Canonicalise, so that ".." segments cannot escape the static dir
+    val myfile = new File(staticRoot, path.encode).getCanonicalFile
+    val insideStaticRoot = myfile.toPath.startsWith(staticRoot.toPath)
     for {
       http <-
-        if (myfile.isDirectory) {
+        if (!insideStaticRoot) Http.empty
+        else if (myfile.isDirectory) {
           val files = myfile.listFiles.toList.sortBy(_.getName)
 
           Http.template(s"File Explorer ~${encodeForBrowser(path)}") {

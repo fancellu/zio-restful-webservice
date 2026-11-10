@@ -17,7 +17,7 @@ object OpenAIModerationApp {
 
   def moderation(input: String): ZIO[Client, Throwable, Response] ={
     val url = s"$HOST/moderations"
-    val json = for {
+    for {
       open_api_key <- getOpenAPIKey
       res <- Client.request(
         url,
@@ -31,8 +31,7 @@ object OpenAIModerationApp {
       _ <- ZIO.logInfo(string)
       response = string.fromJson[CreateModerationResponse].toOption
       json = response.map(_.toJsonPretty).getOrElse(string)
-    } yield json
-    json.map(Response.json(_))
+    } yield Response.json(json).setStatus(res.status)
   }
 
   def apply(): Http[

@@ -26,7 +26,7 @@ object OpenAIDallEApp {
       response = string.fromJson[ImagesResponse].toOption
       link: Option[String] = response.flatMap(_.data.headOption.flatMap(_.url))
       element = link.map(url=>img(srcAttr:= url)).getOrElse(div("Image not found"))
-    } yield Response.html(element)
+    } yield Response.html(element).setStatus(res.status)
   }
 
   def apply(): Http[

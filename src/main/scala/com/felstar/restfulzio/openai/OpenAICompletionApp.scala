@@ -18,7 +18,7 @@ object OpenAICompletionApp {
 
   def completion(prompt: String): ZIO[Client, Throwable, Response] ={
     val url = s"$HOST/completions"
-    val json = for {
+    for {
       open_api_key <- getOpenAPIKey
       res <- Client.request(
         url,
@@ -41,8 +41,8 @@ object OpenAICompletionApp {
       //        "param": null,
       //        "code": "invalid_api_key"
       //    }
-    } yield json
-    json.map(Response.json(_))
+      // and we pass on the upstream status, so that an error is not reported as a 200
+    } yield Response.json(json).setStatus(res.status)
   }
 
   def apply(): Http[

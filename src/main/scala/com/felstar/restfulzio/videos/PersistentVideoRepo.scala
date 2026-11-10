@@ -29,14 +29,18 @@ case class PersistentVideoRepo(ds: DataSource) extends VideoRepo {
   }.provide(ZLayer.succeed(ds))
 
   override def lookup(id: String): Task[Option[Video]] = {
-    if (id.isEmpty) ZIO.succeed(None) else
-    ctx.run {
-      quote {
-        query[VideoTable]
-          .filter(p => p.uuid == lift(UUID.fromString(id)))
-          .map(v => Video(v.name, v.uuid))
-      }
-    }.provide(ZLayer.succeed(ds)).map(_.headOption)
+    // An id that is not a UUID cannot exist, so it is not found, rather than an error
+    scala.util.Try(UUID.fromString(id)).toOption match {
+      case None => ZIO.succeed(None)
+      case Some(uuid) =>
+        ctx.run {
+          quote {
+            query[VideoTable]
+              .filter(p => p.uuid == lift(uuid))
+              .map(v => Video(v.name, v.uuid))
+          }
+        }.provide(ZLayer.succeed(ds)).map(_.headOption)
+    }
   }
 
   override def videos: Task[List[Video]] =

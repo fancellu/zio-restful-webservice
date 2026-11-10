@@ -60,13 +60,14 @@ object ClientApp {
     _ <- ZIO.succeed(println(dogUrl))
     resp <- Client.request(dogUrl)
     data <- resp.body.asArray
-    _ <- ZIO.succeed {
-      val filename = dogUrl.split("/").last
+    _ <- ZIO.attemptBlocking {
+      // getName strips any directory part, as the url is from a 3rd party
+      val filename = new java.io.File(dogUrl.split("/").last).getName
       println(s"Download $filename")
       val dir = new java.io.File("src/main/resources/dogs")
       dir.mkdirs()
       val target = new BufferedOutputStream(new FileOutputStream(new java.io.File(dir, filename)))
-      try data.foreach(target.write(_)) finally target.close()
+      try target.write(data.toArray) finally target.close()
     }
   } yield ()
 

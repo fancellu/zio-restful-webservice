@@ -27,7 +27,7 @@ object StreamApp {
   )
 
   val videos: ZStream[VideoRepo, Throwable, String] = {
-    VideoRepo.videosStream.map(response => response.toJson).schedule(Schedule.spaced(500.millis))
+    VideoRepo.videosStream.map(response => response.toJson + "\n").schedule(Schedule.spaced(500.millis))
   }
 
   def apply(): Http[VideoRepo, Throwable, Request, Response] =

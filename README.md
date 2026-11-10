@@ -59,6 +59,7 @@ Now targeting zio-http 0.0.3
 (Some streaming examples)
 - http://localhost:8080/stream/incrementing
 - http://localhost:8080/stream/randomInt
+- http://localhost:8080/stream/both (the two above, one after the other)
 - http://localhost:8080/stream/videos
   - (Make sure you have some videos in DB, perhaps call http://localhost:8080/videos/loadup)
 

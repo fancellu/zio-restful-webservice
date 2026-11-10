@@ -34,6 +34,14 @@ object HelloWorldAppSpec extends ZIOSpecDefault {
       for {
         expectedBody <- app(req).flatMap(_.body.asString)
       } yield assertTrue(expectedBody == "Hello Dino and Milo!")
+    },
+    test("should say Hello World! when there are query params, but no name") {
+      val path = !! / "myroot"
+      val req = Request.get(url = URL(path, queryParams = QueryParams("foo" -> "bar")))
+
+      for {
+        expectedBody <- app(req).flatMap(_.body.asString)
+      } yield assertTrue(expectedBody == "Hello World!")
     }
 
   ).provide(ZLayer.succeedEnvironment(ZEnvironment(

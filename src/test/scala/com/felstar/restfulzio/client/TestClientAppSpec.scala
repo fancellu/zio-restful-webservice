@@ -30,9 +30,10 @@ object TestClientAppSpec extends ZIOSpecDefault {
         _ <- TestClient.addHandler { case req: Request =>
           ZIO.logInfo(s"Test client being called on $req") *> ZIO.succeed(
             Response(
-              status = Status.NotFound, // Doesn't work with Ok, no idea why! Returns "null" on ok
-              body = Body.fromCharSequence("facere repellat provident"),
-              headers = Headers(HeaderNames.contentType, HeaderValues.textPlain)
+              // On Ok the body has to be a valid Post, as ClientApp parses it (anything else becomes "null")
+              status = Status.Ok,
+              body = Body.fromCharSequence("""{"userId":1,"id":1,"title":"facere repellat provident","body":"some body"}"""),
+              headers = Headers(HeaderNames.contentType, HeaderValues.applicationJson)
             )
           )
         }

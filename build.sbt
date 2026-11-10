@@ -8,6 +8,7 @@ libraryDependencies ++= Seq(
   "dev.zio"         %% "zio"            % "2.0.3",
   "dev.zio"         %% "zio-json"       % "0.3.0",
   "dev.zio"         %% "zio-http"       % "0.0.3",
+  "dev.zio"         %% "zio-logging"    % "2.0.0",
   "io.getquill"     %% "quill-zio"      % "4.6.0",
   "io.getquill"     %% "quill-jdbc-zio" % "4.6.0",
   "com.h2database"  % "h2"              % "2.1.214",

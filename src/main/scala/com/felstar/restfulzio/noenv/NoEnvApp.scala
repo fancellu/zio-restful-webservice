@@ -6,7 +6,7 @@ import zio.Console.printLine
 import zio.Duration._
 import zio.json.{DecoderOps, DeriveJsonDecoder, DeriveJsonEncoder, EncoderOps, JsonDecoder, JsonEncoder}
 import zio.cache.{Cache, Lookup}
-import zio.http.model.{HttpError, Method}
+import zio.http.model.{HttpError, Method, Status}
 import zio.http.model.Method
 import zio.http.{Http, Middleware, Request, Response}
 import zio.{URIO, ZIO, durationInt}
@@ -66,7 +66,7 @@ object NoEnvApp {
     val simplePostCodec: Http[Any, Nothing, Request, Response] = simplePostService @@ codecMiddleware[SimplePost, String]
 
     val codecPost: Http[Any, Nothing, Request, Response] = Http.collectZIO[Request] {
-      case req@Method.POST -> !! / "simplepostcodec" => simplePostCodec(req).orElse(ZIO.never)
+      case req@Method.POST -> !! / "simplepostcodec" => simplePostCodec(req).orElseSucceed(Response.status(Status.NotFound))
     }
 
     val first: Http[Any, Nothing, Request, Response] = Http.collect[Request] {

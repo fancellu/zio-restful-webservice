@@ -15,7 +15,7 @@ object HelloWorldApp {
     Http.fromZIO(ZIO.serviceAt[String]("helloworld")).flatMap { _.map( root=>
       Http.collect[Request] {
         // GET /$root/?name=:name
-        case req@Method.GET -> !! / `root` if req.url.queryParams.nonEmpty =>
+        case req@Method.GET -> !! / `root` if req.url.queryParams.get("name").exists(_.nonEmpty) =>
           Response.text(s"Hello ${req.url.queryParams("name").mkString(" and ")}!")
 
         // GET /$root

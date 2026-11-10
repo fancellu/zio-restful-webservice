@@ -70,7 +70,7 @@ object MainApp extends ZIOAppDefault {
     _ <- ZIO.logInfo("Starting up")
     args <- getArgs // to get command line params
     _ <- ZIO.logInfo(args.toString)
-    serverFibre <- Server.serve((NoEnvApp()  @@ requestMiddleWare ++ HelloWorldApp() ++ DownloadApp() ++
+    server1 = Server.serve((NoEnvApp()  @@ requestMiddleWare ++ HelloWorldApp() ++ DownloadApp() ++
       CounterApp() ++ VideoApp() ++ ActorsApp() ++ HelloTwirlApp() ++ // (if (enableSpark) SparkApp() else Http.empty)  ++
       DelayApp() ++ StreamApp() ++ ClientApp() ++ OpenAICompletionApp() ++ OpenAIDallEApp() ++ OpenAIModerationApp()
       ++ CookieAuthApp() ++ FormApp() ++ StaticApp()) @@ middlewares)
@@ -91,10 +91,11 @@ object MainApp extends ZIOAppDefault {
         InmemoryVideoRepo.layer,
         // PersistentVideoRepo.layer
         ZLayer.fromZIO(userCache),
+        // For `ActorsApp`
+        ActorsApp.layer,
 //        if (enableSpark) sparkSession else ZLayer.die(new Throwable("bang"))
       )
-      .fork
-    serverFibre2 <- Server.serve((Http.collect[Request] {
+    server2 = Server.serve((Http.collect[Request] {
       case Method.GET -> !! / "hello" => Response.text("world")
       case Method.GET -> !! / "world" => Response.text("hello")
     }) @@ middlewares)
@@ -102,10 +103,12 @@ object MainApp extends ZIOAppDefault {
         config2Layer,
         Server.live
       )
-      .fork
-    _ <- Console.readLine("Press enter to stop the server\n")
-    _ <- Console.printLine("Interrupting server")
-    _ <- serverFibre.interrupt
-    _ <- serverFibre2.interrupt
+    // If stdin is closed (docker, service, non interactive shell) we just keep running
+    waitForEnter = Console.readLine("Press enter to stop the server\n")
+      .catchAll(_ => ZIO.logInfo("No stdin, running until killed") *> ZIO.never) *>
+      Console.printLine("Interrupting server")
+    // Whichever finishes first wins, so a server that fails to start (e.g. port in use) fails the app
+    servers = (server1 zipPar server2).unit.tapError(e => ZIO.logError(s"Server failed: $e"))
+    _ <- servers.raceFirst(waitForEnter)
   } yield ()
 }
