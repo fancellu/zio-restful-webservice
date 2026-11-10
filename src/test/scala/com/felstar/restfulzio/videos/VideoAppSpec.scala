@@ -1,23 +1,30 @@
 package com.felstar.restfulzio.videos
 
-import zio.http.{Body, _}
-import zio.http.model.Method.POST
+import zio.http._
 import zio.json.DecoderOps
-import zio.ZIO
+import zio.{Scope, ZIO}
 import zio.test._
 
 object VideoAppSpec extends ZIOSpecDefault {
 
-  val app = VideoApp()
+  // sandbox turns failures into 500 responses, as Routes can only be run once their errors are handled
+  val app = VideoApp().sandbox
 
   def spec = suite("VideoAppSpec")(
     test("Loaded films are present") {
       for {
-        _ <- app(Request.post(body = Body.empty, url = URL(!! / "videos"/ "film1")))
-        _ <- app(Request.get(url = URL(!! / "videos" / "loadup")))
-        expectedBody <- app(Request.get(url = URL(!! / "videos"))).flatMap(_.body.asString)
+        _ <- app.runZIO(Request.post("/videos/film1", Body.empty))
+        _ <- app.runZIO(Request.get("/videos/loadup"))
+        expectedBody <- app.runZIO(Request.get("/videos")).flatMap(_.body.asString)
         videos = expectedBody.fromJson[List[Video]].toOption
       } yield assertTrue(videos.exists(_.map(_.name).toSet == Set("one", "two", "three", "four", "film1")))
+    },
+    test("A registered film can be looked up, an unknown one is a 404") {
+      for {
+        id      <- app.runZIO(Request.post("/videos/film1", Body.empty)).flatMap(_.body.asString)
+        found   <- app.runZIO(Request.get(s"/videos/$id")).flatMap(_.body.asString)
+        missing <- app.runZIO(Request.get("/videos/abc"))
+      } yield assertTrue(found.contains("film1"), missing.status == Status.NotFound)
     },
     test("Concurrent registrations are not lost") {
       for {
@@ -25,5 +32,5 @@ object VideoAppSpec extends ZIOSpecDefault {
         videos <- VideoRepo.videos
       } yield assertTrue(videos.size == 1000)
     }
-  ).provide(InmemoryVideoRepo.layer)
+  ).provide(InmemoryVideoRepo.layer, Scope.default)
 }

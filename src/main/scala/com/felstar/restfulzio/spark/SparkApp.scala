@@ -2,7 +2,6 @@ package com.felstar.restfulzio.spark
 
 import zio._
 import zio.http._
-import zio.http.model.Method
 import org.apache.spark.sql.Row
 import zio.spark.experimental
 import zio.spark.experimental.Pipeline
@@ -11,10 +10,10 @@ import zio.spark.rdd.RDD
 import zio.spark.sql._
 import zio.spark.sql.implicits._
 
-/** An http app that:
-  *   - Accepts a `Request` and returns a `Response`
-  *   - Does not fail
-  *   - Uses a String for the env, for the webapp root
+/** Routes that:
+  *   - Accept a `Request` and return a `Response`
+  *   - Could fail
+  *   - Use a `SparkSession`
   */
 object SparkApp {
 
@@ -75,31 +74,30 @@ object SparkApp {
       st = people.mkString(",")
     } yield st
 
-  def apply(): Http[SparkSession, Throwable, Request, Response] =
-    Http.fromZIO(ZIO.service[SparkSession]).flatMap { ss =>
-      val ssLayer = ZLayer.succeed(ss)
-      val SPARKROOT = !! / "spark"
-      Http.collectZIO[Request] {
-        case Method.GET -> SPARKROOT =>
-          for {
-            st <- allZIO.provide(ssLayer)
-            _  <- ZIO.logInfo(st)
-          } yield Response.text(st)
-        case Method.GET -> SPARKROOT / "wordcount" =>
-          for {
-            mostUsedWords <- wordCountZIO.provide(ssLayer)
-            _             <- ZIO.logInfo(mostUsedWords.toString)
-          } yield Response.text(mostUsedWords.mkString("\n"))
-        case Method.GET -> SPARKROOT / "person" / name =>
-          for {
-            st <- byNameZIO.provide(ssLayer, ZLayer.succeed(name))
-            _  <- ZIO.logInfo(st)
-          } yield Response.text(st)
-        case Method.GET -> SPARKROOT / "job" =>
-          for {
-            st <- jobZIO.provide(ssLayer)
-            _  <- ZIO.logInfo(st)
-          } yield Response.text(st)
-      }
+  def apply(): Routes[SparkSession, Throwable] = Routes(
+    Method.GET / "spark" -> handler {
+      for {
+        st <- allZIO
+        _  <- ZIO.logInfo(st)
+      } yield Response.text(st)
+    },
+    Method.GET / "spark" / "wordcount" -> handler {
+      for {
+        mostUsedWords <- wordCountZIO
+        _             <- ZIO.logInfo(mostUsedWords.toString)
+      } yield Response.text(mostUsedWords.mkString("\n"))
+    },
+    Method.GET / "spark" / "person" / string("name") -> handler { (name: String, _: Request) =>
+      for {
+        st <- byNameZIO.provideSome[SparkSession](ZLayer.succeed(name))
+        _  <- ZIO.logInfo(st)
+      } yield Response.text(st)
+    },
+    Method.GET / "spark" / "job" -> handler {
+      for {
+        st <- jobZIO
+        _  <- ZIO.logInfo(st)
+      } yield Response.text(st)
     }
+  )
 }

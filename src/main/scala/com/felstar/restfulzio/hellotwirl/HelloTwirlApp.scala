@@ -1,34 +1,31 @@
 package com.felstar.restfulzio.hellotwirl
 
-import html.hellotwirl
-import zio.http.{html, _}
-import io.netty.handler.codec.http.{HttpHeaderNames, HttpHeaderValues}
-import zio.http.model.{Headers, Method}
+import _root_.html.hellotwirl
+import zio.http._
 
-/** An http app that:
-  *   - Accepts a `Request` and returns a `Response`
-  *   - Does not fail
-  *   - Does not use Env
+/** Routes that:
+  *   - Accept a `Request` and return a `Response`
+  *   - Do not fail
+  *   - Do not use Env
   */
 object HelloTwirlApp {
 
   val textHTML: Headers =
-    Headers(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.TEXT_HTML)
+    Headers(Header.ContentType(MediaType.text.html))
 
-  def apply(): Http[Any, Nothing, Request, Response] =
-    Http.collect[Request] {
-      // GET /hellotwirl/:string
-      case Method.GET -> !! / "hellotwirl" / string  =>
-        Response(
-          body = Body.fromString(hellotwirl.render(string).toString),
-          headers = textHTML
-        )
-      // GET /hellotwirl
-      case Method.GET -> !! / "hellotwirl" =>
-        Response(
-          body = Body.fromString(hellotwirl.render("defaultstring").toString),
-          headers = textHTML
-        )
-    }
+  private def render(param: String): Response =
+    Response(
+      body = Body.fromString(hellotwirl.render(param).toString),
+      headers = textHTML
+    )
+
+  def apply(): Routes[Any, Nothing] = Routes(
+    // GET /hellotwirl/:string
+    Method.GET / "hellotwirl" / string("string") -> handler { (string: String, _: Request) =>
+      render(string)
+    },
+    // GET /hellotwirl
+    Method.GET / "hellotwirl" -> handler(render("defaultstring"))
+  )
 
 }

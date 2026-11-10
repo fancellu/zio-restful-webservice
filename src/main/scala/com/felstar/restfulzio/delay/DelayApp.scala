@@ -1,20 +1,19 @@
 package com.felstar.restfulzio.delay
 
 import zio.Console._
-import zio.{IO, Random, Task, UIO, ZIO, durationInt}
+import zio.{Random, Task, UIO, ZIO, durationInt}
 import zio.http._
-import zio.http.model.Method
 
 
 /**
- * An http app that:
- *   - Accepts a `Request` and returns a `Response`
- *   - Does not fail
- *   - Does not use Env
+ * Routes that:
+ *   - Accept a `Request` and return a `Response`
+ *   - May fail, /bang always does, /bangrandomly mostly does
+ *   - Do not use Env
  *   Delays N seconds, useful when testing client code for timeout handling
  */
 object DelayApp {
-  def apply(): Http[Any, Throwable, Request, Response] = {
+  def apply(): Routes[Any, Throwable] = {
 
     def delay(n: Int=3): UIO[Response] = {
       for {
@@ -33,17 +32,17 @@ object DelayApp {
       } yield Response.text(s"OK")
     }
 
-    Http.collectZIO[Request] {
+    def bang(): Task[Response] = delay() *> ZIO.fail(new Exception("bang!!!"))
+
+    Routes(
       // GET /delay/n
-      case Method.GET -> !! / "delay" / int(n) =>
+      Method.GET / "delay" / int("n") -> handler { (n: Int, _: Request) =>
         delay(n)
+      },
       // GET /delay
-      case Method.GET -> !! / "delay" =>
-        delay()
-      case Method.GET -> !! / "bang" =>
-        delay() *> ZIO.fail(new Exception("bang!!!"))
-      case Method.GET -> !! / "bangrandomly" =>
-        bangRandomly()
-    }
+      Method.GET / "delay" -> handler(delay()),
+      Method.GET / "bang" -> handler(bang()),
+      Method.GET / "bangrandomly" -> handler(bangRandomly())
+    )
   }
 }

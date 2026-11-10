@@ -3,41 +3,35 @@ package com.felstar.restfulzio.download
 import zio.stream.ZStream
 import zio._
 import zio.http._
-import zio.http.model.{Header, Headers, Method}
-
-import scala.concurrent.duration.DurationDouble
 
 /**
- * An http app that: 
- *   - Accepts a `Request` and returns a `Response` 
- *   - May fail with type of `Throwable`
- *   - Does not require any environment
+ * Routes that:
+ *   - Accept a `Request` and return a `Response`
+ *   - Do not fail (though the stream in the body could)
+ *   - Do not require any environment
  */
 object DownloadApp {
-  def apply(): Http[Any, Throwable, Request, Response] =
-    Http.collectHttp[Request] {
-      // GET /download
-      case Method.GET -> !! / "download" =>
-        val fileName = "file.txt"
-        Http.fromStream(ZStream.fromResource(fileName)).setHeaders(
-          Headers(
-            Header("Content-Type", "application/octet-stream"),
-            Header("Content-Disposition", s"attachment; filename=$fileName")
-          )
-        )
 
-      // Download a large file using streams, deliberately made to be slow
-      // GET /download/stream
-      case Method.GET -> !! / "download" / "stream" =>
-        val file = "bigfile.txt"
-        Http.fromStream(
-          ZStream.fromResource(file)
-            .schedule(Schedule.spaced(10.millis))
-        ).setHeaders(
-          Headers(
-            Header("Content-Type", "application/octet-stream"),
-            Header("Content-Disposition", s"attachment; filename=$file")
-          )
-        )
+  private def download(fileName: String, stream: ZStream[Any, Throwable, Byte]): Response =
+    Response(
+      headers = Headers(
+        Header.ContentType(MediaType.application.`octet-stream`),
+        Header.ContentDisposition.attachment(fileName)
+      ),
+      body = Body.fromStreamChunked(stream)
+    )
+
+  def apply(): Routes[Any, Nothing] = Routes(
+    // GET /download
+    Method.GET / "download" -> handler {
+      val fileName = "file.txt"
+      download(fileName, ZStream.fromResource(fileName))
+    },
+    // Download a large file using streams, deliberately made to be slow
+    // GET /download/stream
+    Method.GET / "download" / "stream" -> handler {
+      val file = "bigfile.txt"
+      download(file, ZStream.fromResource(file).schedule(Schedule.spaced(10.millis)))
     }
+  )
 }

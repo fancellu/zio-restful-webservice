@@ -1,41 +1,30 @@
 package com.felstar.restfulzio.counter
 
-import com.felstar.restfulzio.MainApp
 import zio._
-import zio.http.{!!, _}
-import zio.http.model.Method
+import zio.http._
 
-/** An http app that:
-  *   - Accepts `Request` and returns a `Response`
-  *   - Does not fail
-  *   - Requires the `Ref[Int]` as the environment
+/** Routes that:
+  *   - Accept `Request` and return a `Response`
+  *   - Do not fail
+  *   - Require the `Ref[Int]` as the environment
   */
 object CounterApp {
 
-  def apply(): Http[Ref[Int], Nothing, Request, Response] =
-    Http.fromZIO(ZIO.service[Ref[Int]]).flatMap { ref =>
-      Http.collectZIO[Request] {
-        _.dropTrailingSlash match {
-          case Method.GET -> !! / "up" =>
-            for {
-              i <- ref.updateAndGet(_ + 1)
-              _ <- ZIO.logInfo(s"Incremented to $i")
-            } yield Response.text(i.toString)
-          case Method.GET -> !! / "down" =>
-            ref
-              .updateAndGet(_ - 1)
-              .tap { i => ZIO.logInfo(s"Decremented to $i") }
-              .map(_.toString)
-              .map(Response.text)
-          case Method.GET -> !! / "get" =>
-            ref.get.map(_.toString).map(Response.text)
-          case Method.GET -> !! / "reset" =>
-            ref
-              .updateAndGet(_ => 0)
-              .tap { i => ZIO.logInfo(s"Reset to $i") }
-              .map(_.toString)
-              .map(Response.text)
-        }
-      }
+  private def withCounter(f: Ref[Int] => UIO[Int]): URIO[Ref[Int], Response] =
+    ZIO.serviceWithZIO[Ref[Int]](f).map(i => Response.text(i.toString))
+
+  def apply(): Routes[Ref[Int], Nothing] = Routes(
+    Method.GET / "up" -> handler {
+      withCounter(_.updateAndGet(_ + 1).tap(i => ZIO.logInfo(s"Incremented to $i")))
+    },
+    Method.GET / "down" -> handler {
+      withCounter(_.updateAndGet(_ - 1).tap(i => ZIO.logInfo(s"Decremented to $i")))
+    },
+    Method.GET / "get" -> handler {
+      withCounter(_.get)
+    },
+    Method.GET / "reset" -> handler {
+      withCounter(_.updateAndGet(_ => 0).tap(i => ZIO.logInfo(s"Reset to $i")))
     }
+  )
 }

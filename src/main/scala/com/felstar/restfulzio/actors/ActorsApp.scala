@@ -5,7 +5,6 @@ import zio.actors.Actor.Stateful
 import zio.actors._
 import zio.{ZIO, ZLayer, durationInt}
 import zio.http._
-import zio.http.model.Method
 
 object ActorsApp {
 
@@ -61,38 +60,43 @@ object ActorsApp {
     _      <- ZIO.logInfo(s"Returned from actor wait")
   } yield banged
 
-  def apply(): Http[ActorRef[Command], Throwable, Request, Response] =
-    Http.collectZIO[Request] {
-      case Method.GET -> !! / "actors" =>
-        for {
-          out <- doDouble.provideSome[ActorRef[Command]](ZLayer.succeed(42)).orDie
-        } yield Response.text(s"Actor returned $out")
-      case Method.GET -> !! / "actors" / int(i) =>
-        for {
-          out <- doDouble.provideSome[ActorRef[Command]](ZLayer.succeed(i)).orDie
-        } yield Response.text(s"Actor returned $out")
-
-      case Method.GET -> !! / "actors" / "nodie" =>
-        for {
-          out <- doBang
-            .provideSome[ActorRef[Command]](ZLayer.succeed("nodie"))
-            .orElseSucceed(
-              s"fallback after error"
-            )
-        } yield Response.text(s"Actor returned $out")
-      case Method.GET -> !! / "actors" / "catchAll" =>
-        for {
-          out <- doBang.provideSome[ActorRef[Command]](ZLayer.succeed("catchAll")).catchAll {
-            case th: Throwable => ZIO.succeed(s"fallback because $th")
-          }
-        } yield Response.text(s"Actor returned $out")
-      case Method.GET -> !! / "actors" / string =>
-        for {
-          out <- doBang.provideSome[ActorRef[Command]](
-            ZLayer.succeed(string)
-          ) // you will get exception logged by errorMiddleware, not displayed to screen
-        } yield Response.text(s"Will never return  $out")
-
+  def apply(): Routes[ActorRef[Command], Throwable] = Routes(
+    Method.GET / "actors" -> handler {
+      for {
+        out <- doDouble.provideSome[ActorRef[Command]](ZLayer.succeed(42)).orDie
+      } yield Response.text(s"Actor returned $out")
+    },
+    Method.GET / "actors" / "nodie" -> handler {
+      for {
+        out <- doBang
+          .provideSome[ActorRef[Command]](ZLayer.succeed("nodie"))
+          .orElseSucceed(
+            s"fallback after error"
+          )
+      } yield Response.text(s"Actor returned $out")
+    },
+    Method.GET / "actors" / "catchAll" -> handler {
+      for {
+        out <- doBang.provideSome[ActorRef[Command]](ZLayer.succeed("catchAll")).catchAll {
+          case th: Throwable => ZIO.succeed(s"fallback because $th")
+        }
+      } yield Response.text(s"Actor returned $out")
+    },
+    // GET /actors/:int doubles the int, any other string goes bang
+    Method.GET / "actors" / string("param") -> handler { (param: String, _: Request) =>
+      param.toIntOption match {
+        case Some(i) =>
+          for {
+            out <- doDouble.provideSome[ActorRef[Command]](ZLayer.succeed(i)).orDie
+          } yield Response.text(s"Actor returned $out")
+        case None =>
+          for {
+            out <- doBang.provideSome[ActorRef[Command]](
+              ZLayer.succeed(param)
+            ) // you will get exception logged by MainApp.handleErrors, not displayed to screen
+          } yield Response.text(s"Will never return  $out")
+      }
     }
+  )
 
 }

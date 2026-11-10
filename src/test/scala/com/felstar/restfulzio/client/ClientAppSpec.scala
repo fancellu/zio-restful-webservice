@@ -19,16 +19,14 @@ object ClientAppSpec extends ZIOSpecDefault {
     lookup = Lookup(ClientApp.getUser)
   )
 
-  private val app = ClientApp()
+  private val app = ClientApp().sandbox
 
   def spec = suite("ClientSpec")(
     test("Using the real client (which a unit test shouldn't do, obviously)") {
-      val path = !! / "client" / "users" / "1"
-
-      val req = Request.get(url = URL(path))
+      val req = Request.get("/client/users/1")
 
       for {
-        expectedBody <- app(req).flatMap(_.body.asString)
+        expectedBody <- app.runZIO(req).flatMap(_.body.asString)
       } yield assertTrue(expectedBody.contains("Leanne Graham"))
     }.provide(
       Client.default,

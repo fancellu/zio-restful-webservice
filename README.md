@@ -1,39 +1,39 @@
-# ZIO Restful webservice example
+# 🚀 ZIO Restful webservice example
 
 A collection of small, independent example apps (one per package under `src/main/scala/com/felstar/restfulzio`),
 all composed together and served by `MainApp` on http://localhost:8080, plus a second server on port 8082.
 
-Using zio 2.0, zio-http, zio-json, quill, H2, twirl, zio-logging, zio-cache, zio-actors, zio-spark, openai
+Using zio 2.1, zio-http 3, zio-json, quill, H2, twirl, zio-logging, zio-cache, zio-actors, zio-spark, openai
 
-Now targeting zio-http 0.0.3
+Now targeting zio 2.1.27 and zio-http 3.11.6 (the `Routes` / `Handler` API)
 
-## Apps
+## 🧩 Apps
 
-### NoEnvApp
+### 🌱 NoEnvApp
 (no use of Environment)
   - http://localhost:8080/noenv
   - http://localhost:8080/headers (shows headers and use of request altering middleware, note "Seen" header)
   - http://localhost:8080/simplepost (POST some json, e.g. ```{"string": "hello"}```)
   - http://localhost:8080/simplepost2 (The same but using an implicit class to clean up parsing a bit)
-  - http://localhost:8080/simplepostcodec (The same but using MiddlewareCodec magic)
+  - http://localhost:8080/simplepostcodec (The same, but the route is a plain `SimplePost => String` function, wrapped by a generic json handler. Bad json is a 400)
 
-### HelloWorldApp
+### 👋 HelloWorldApp
 (Takes a String param via serviceAt Map as app root name)
   - http://localhost:8080/hello
   - http://localhost:8080/hello/Dino
   - http://localhost:8080/hello?name=Dino&name=Milo
 
-### HelloWorldTwirlApp
+### 🌀 HelloWorldTwirlApp
 (Takes a String param and uses Twirl for HTML rendering)
   - http://localhost:8080/hellotwirl
   - http://localhost:8080/hellotwirl/Dino
 
-### DownloadApp
+### 📥 DownloadApp
 (Downloads a file in one go, and streaming, slowly)
   - http://localhost:8080/download
   - http://localhost:8080/download/stream
 
-### CounterApp
+### 🔢 CounterApp
 (Stateful use of Ref)
   - http://localhost:8080/up
   - http://localhost:8080/up/ (You can put slashes at the end of each endpoint here)
@@ -41,21 +41,21 @@ Now targeting zio-http 0.0.3
   - http://localhost:8080/get
   - http://localhost:8080/reset 
 
-### VideoApp
+### 🎬 VideoApp
 (In memory and H2+Quill)
   - POST http://localhost:8080/videos/:name
   - http://localhost:8080/videos
   - http://localhost:8080/videos/loadup
   - http://localhost:8080/videos/:uuid 
 
-### DelayApp
+### ⏳ DelayApp
 (Semantically sleeps for a while, no thread blocking, useful for emulating slow queries)
 - http://localhost:8080/delay
 - http://localhost:8080/delay/2
-- http://localhost:8080/bang (always fails with a 500)
-- http://localhost:8080/bangrandomly (fails with a 500 about 9 times out of 10)
+- http://localhost:8080/bang 💥 (always fails with a 500)
+- http://localhost:8080/bangrandomly 🎲 (fails with a 500 about 9 times out of 10)
 
-### StreamApp
+### 🌊 StreamApp
 (Some streaming examples)
 - http://localhost:8080/stream/incrementing
 - http://localhost:8080/stream/randomInt
@@ -63,7 +63,7 @@ Now targeting zio-http 0.0.3
 - http://localhost:8080/stream/videos
   - (Make sure you have some videos in DB, perhaps call http://localhost:8080/videos/loadup)
 
-### ClientApp
+### 🌐 ClientApp
 (Client examples talking to external web service https://jsonplaceholder.typicode.com/)
 - http://localhost:8080/client/users
 - http://localhost:8080/client/users/1 (Is Cached, TTL 15 seconds)
@@ -72,10 +72,10 @@ Now targeting zio-http 0.0.3
 - http://localhost:8080/client/posts/userId/1 
 - http://localhost:8080/client/dopost
 
-Downloads 5 random dog pictures from ```https://dog.ceo/api/breeds/image/random/5``` into `src/main/resources/dogs` (created if missing)
+🐶 Downloads 5 random dog pictures from ```https://dog.ceo/api/breeds/image/random/5``` into `src/main/resources/dogs` (created if missing)
 - http://localhost:8080/client/dogs 
 
-### StaticApp
+### 📁 StaticApp
 (Static file server from static dir)
 - http://localhost:8080
 - http://localhost:8080/subdir
@@ -83,7 +83,7 @@ Downloads 5 random dog pictures from ```https://dog.ceo/api/breeds/image/random/
 - http://localhost:8080/test.txt
 - http://localhost:8080/test2.txt
 
-### ActorsApp
+### 🎭 ActorsApp
 - http://localhost:8080/actors
 - http://localhost:8080/actors/[int]
 - http://localhost:8080/actors/nodie
@@ -105,46 +105,46 @@ Downloads 5 random dog pictures from ```https://dog.ceo/api/breeds/image/random/
 
 [//]: # (- http://localhost:8080/spark/wordcount)
 
-### OpenAICompletionApp
+### 🤖 OpenAICompletionApp
 (Modelled after https://github.com/openai/openai-quickstart-python.git)
 
-To use it you'll have to fill in your OpenAI `OPENAI_API_KEY`
+🔑 To use it you'll have to fill in your OpenAI `OPENAI_API_KEY`
 
 - http://localhost:8080/openai/superhero/Dog
 - http://localhost:8080/openai/prompt/translate+I+like+kittens+to+French
 
-### OpenAIDallEApp
+### 🎨 OpenAIDallEApp
 
 - http://localhost:8080/openai/dalle/a+ginger+cat,+wearing+round+black+glasses,+riding+a+bike+and+smoking+a+pipe,+photorealistic
 
-### OpenAIModerationApp
+### 🛡️ OpenAIModerationApp
 
 - http://localhost:8080/openai/moderation/we+must+kill+all+the+elves
 - http://localhost:8080/openai/moderation/we+must+kiss+all+the+elves
 
-### CookieAuthApp
+### 🍪 CookieAuthApp
 
 - http://localhost:8080/login/dino/onid
 - http://localhost:8080/login/dino/badpassword
 - http://localhost:8080/auth/dino/greet
 - http://localhost:8080/auth/wrongname/greet
 
-### FormApp
+### 📝 FormApp
 
 - http://localhost:8080/form.html
 
-### Parallel server on port 8082
+### 🔀 Parallel server on port 8082
 
 - http://localhost:8082/hello => world
 - http://localhost:8082/world => hello
 
-## Requirements
+## 📋 Requirements
 
 - JDK 17 or 21 recommended (it builds and runs on newer JDKs too, but if you re-enable the Spark code you'll need 17 or older, or the appropriate `--add-opens` flags)
-- sbt 1.x (currently 1.13.0, see `project/build.properties`). **Not sbt 2.x**: the sbt-twirl plugin and the Scala 2 compiler plugin used here are sbt 1.x only
-- Scala 2.13.16 (set in `build.sbt`)
+- sbt 1.x (currently 1.13.0, see `project/build.properties`). ⚠️ **Not sbt 2.x**: the sbt-twirl plugin and the Scala 2 compiler plugin used here are sbt 1.x only
+- Scala 2.13.18 (set in `build.sbt`)
 
-## To run
+## ▶️ To run
 
 ```
 sbt run
@@ -154,7 +154,7 @@ You should find it running on http://localhost:8080/ (and http://localhost:8082/
 
 Press enter in the terminal to stop the servers.
 
-## To test
+## 🧪 To test
 
 ```
 sbt test
@@ -162,16 +162,16 @@ sbt test
 
 Uses zio-test and the zio-http testkit.
 
-## Configuration
+## ⚙️ Configuration
 
 - H2 database settings are in `src/main/resources/application.conf`, schema in `h2-schema.sql`
 - `MainApp` uses the in-memory video repo by default. Swap in `PersistentVideoRepo.layer` to use H2 + Quill
 - OpenAI apps read `OPENAI_API_KEY` from a system property or an environment variable
 - Spark is currently disabled (see `enableSpark` in `MainApp`), as enabling it made the 8080 endpoints unreachable
 
-## Troubleshooting
+## 🩺 Troubleshooting
 
 - `bad constant pool index` / `Could not initialize class sbt.internal.parser.SbtParser$`: your sbt is too old for your JDK. Use sbt 1.10+ or an older JDK
 - `sbt-bloop_sbt2_3 ... not found`: Metals has generated sbt 2 plugin files. Use sbt 1.x, and delete the auto-generated `project/project/` and `project/metals.sbt`
 - `Create a new server?` / `ServerAlreadyBootingException`: another sbt instance is still running, stop it first
-- `found version conflict(s)` for `scala-xml`: handled by `libraryDependencySchemes` in `build.sbt`
+- `found version conflict(s)` for `scala-xml` or `zio-json`: handled by `libraryDependencySchemes` in `build.sbt`

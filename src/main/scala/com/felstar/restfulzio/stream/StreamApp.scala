@@ -5,15 +5,13 @@ import zio.http._
 import zio._
 import zio.stream.ZStream
 import com.felstar.restfulzio.videos.Video._
-import zio.http.model.{Headers, Method}
-import zio.http.model.Headers.Header
 import zio.json._
 
 
-/** An http app that:
-  *   - Accepts a `Request` and returns a `Response`
-  *   - May fail with type of `Throwable`
-  *   - Requires a VideoRepo
+/** Routes that:
+  *   - Accept a `Request` and return a `Response`
+  *   - Do not fail (though the stream in the body could)
+  *   - Require a VideoRepo
   */
 object StreamApp {
 
@@ -22,33 +20,25 @@ object StreamApp {
   val incrementing: ZStream[Any, Nothing, String] = ZStream.range(0, 50).map(i => s"$i\n").schedule(Schedule.spaced(100.millis))
 
   private val headers= Headers(
-    Header("Content-Type", "application/octet-stream"),
-    Header("Content-Disposition", s"attachment; filename=stream.txt")
+    Header.ContentType(MediaType.application.`octet-stream`),
+    Header.ContentDisposition.attachment("stream.txt")
   )
 
+  // newline delimited json
   val videos: ZStream[VideoRepo, Throwable, String] = {
     VideoRepo.videosStream.map(response => response.toJson + "\n").schedule(Schedule.spaced(500.millis))
   }
 
-  def apply(): Http[VideoRepo, Throwable, Request, Response] =
+  private def streamed(stream: ZStream[Any, Throwable, String]): Response =
+    Response(headers = headers, body = Body.fromCharSequenceStreamChunked(stream))
 
-    Http.collectHttp[Request] {
-
-      case Method.GET -> !! / "stream" / "incrementing" =>
-        Http
-          .fromStream(incrementing)
-          .setHeaders(headers)
-      case Method.GET -> !! / "stream" / "randomInt" =>
-        Http
-          .fromStream(randomInt)
-          .setHeaders(headers)
-      case Method.GET -> !! / "stream" / "both" =>
-        Http
-          .fromStream(incrementing ++ randomInt)
-          .setHeaders(headers)
-      case Method.GET -> !! / "stream" / "videos" =>
-        Http
-          .fromStream(videos)
-          .setHeaders(headers)
+  def apply(): Routes[VideoRepo, Nothing] = Routes(
+    Method.GET / "stream" / "incrementing" -> handler(streamed(incrementing)),
+    Method.GET / "stream" / "randomInt" -> handler(streamed(randomInt)),
+    Method.GET / "stream" / "both" -> handler(streamed(incrementing ++ randomInt)),
+    // The body outlives the handler, so we give the stream its environment up front
+    Method.GET / "stream" / "videos" -> handler {
+      ZIO.environmentWith[VideoRepo](env => streamed(videos.provideEnvironment(env)))
     }
+  )
 }

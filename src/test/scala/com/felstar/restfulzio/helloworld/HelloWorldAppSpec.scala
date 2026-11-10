@@ -2,46 +2,42 @@ package com.felstar.restfulzio.helloworld
 
 import zio.test._
 import zio.http._
-import zio.{Chunk, ZEnvironment, ZLayer}
-import zio.test.Assertion.equalTo
+import zio.{Chunk, Scope, ZEnvironment, ZLayer}
 
 object HelloWorldAppSpec extends ZIOSpecDefault {
 
-  private val app = HelloWorldApp()
+  private def bodyOf(path: String, queryParams: (String, String)*) = for {
+    app  <- HelloWorldApp()
+    url = URL(Path.decode(path), queryParams = QueryParams(queryParams.groupMap(_._1)(_._2).map { case (k, v) => k -> Chunk.fromIterable(v) }))
+    body <- app.runZIO(Request.get(url)).flatMap(_.body.asString)
+  } yield body
 
   def spec = suite("HelloWorldAppSpec")(
     test("should say Hello World!") {
-      val path = !! / "myroot"
-      val req = Request.get(url = URL(path))
-
       for {
-        expectedBody <- app(req).flatMap(_.body.asString)
+        expectedBody <- bodyOf("/myroot")
       } yield assertTrue(expectedBody == "Hello World!")
     },
     test("should say Hello Dino!") {
-      val path = !! / "myroot" / "Dino"
-      val req = Request.get(url = URL(path))
-
       for {
-        expectedBody <- app(req).flatMap(_.body.asString)
+        expectedBody <- bodyOf("/myroot/Dino")
       } yield assertTrue(expectedBody == "Hello Dino!")
     },
     test("should say Hello Dino and Milo!") {
-      val path = !! / "myroot"
-      val queryParams=QueryParams("name"->"Dino", "name" -> "Milo")
-      val req = Request.get(url = URL(path, queryParams=queryParams))
-
       for {
-        expectedBody <- app(req).flatMap(_.body.asString)
+        expectedBody <- bodyOf("/myroot", "name" -> "Dino", "name" -> "Milo")
       } yield assertTrue(expectedBody == "Hello Dino and Milo!")
     },
     test("should say Hello World! when there are query params, but no name") {
-      val path = !! / "myroot"
-      val req = Request.get(url = URL(path, queryParams = QueryParams("foo" -> "bar")))
-
       for {
-        expectedBody <- app(req).flatMap(_.body.asString)
+        expectedBody <- bodyOf("/myroot", "foo" -> "bar")
       } yield assertTrue(expectedBody == "Hello World!")
+    },
+    test("should not answer on any other root") {
+      for {
+        app      <- HelloWorldApp()
+        response <- app.runZIO(Request.get("/hello"))
+      } yield assertTrue(response.status == Status.NotFound)
     }
 
   ).provide(ZLayer.succeedEnvironment(ZEnvironment(
@@ -49,5 +45,5 @@ object HelloWorldAppSpec extends ZIOSpecDefault {
       "helloworld" -> "myroot",
       "ignore" -> "ignored"
     )
-  )))
+  )), Scope.default)
 }
